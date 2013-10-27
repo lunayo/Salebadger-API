@@ -3,6 +3,7 @@ package app.database;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import static org.mockito.Mockito.*;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,20 +19,16 @@ public class DatabaseUtilTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		product = new Product("iPhone 5", 550, "Apple smartphone");
-	}
 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	@Before
-	public void setUp() throws Exception {
-
-	}
-
-	@After
-	public void tearDown() throws Exception {
+		// LUN
+		// Product is a mock object
+		// I can give the desired behaviour to the methods
+		// See the lines below, there really are self-explanatory
+		product = mock(Product.class);
+		when(product.getPrice()).thenReturn(500);
+		when(product.getName()).thenReturn("iPhone 5");
+		when(product.getDescription()).thenReturn(
+				"I phone 5 is better than WP 7!");
 	}
 
 	@Test

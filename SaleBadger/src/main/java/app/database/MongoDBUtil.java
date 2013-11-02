@@ -2,15 +2,12 @@ package app.database;
 
 import java.net.UnknownHostException;
 
-import org.bson.BasicBSONObject;
+import app.model.Product;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-
-import app.model.Product;
 
 public class MongoDBUtil implements DatabaseUtil {
 

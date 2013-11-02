@@ -1,12 +1,10 @@
 package app.database;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import static org.mockito.Mockito.*;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -33,7 +31,7 @@ public class DatabaseUtilTest {
 
 	@Test
 	public void insertProductAddsThisProduct() {
-		DatabaseUtil du = new MongoDBUtil();
+		DataSource du = new MongoDataSource();
 		du.connect(dbURL, port);
 		int numberOfProducts = (int) du.countProducts();
 		int expectedNumberOfProducts = numberOfProducts + 1;

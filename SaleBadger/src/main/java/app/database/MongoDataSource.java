@@ -9,7 +9,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 
-public class MongoDBUtil implements DatabaseUtil {
+public class MongoDataSource implements DataSource {
 
 	MongoClient mongoClient;
 
@@ -24,7 +24,8 @@ public class MongoDBUtil implements DatabaseUtil {
 		}
 
 	}
-
+	
+	
 	@Override
 	public void insertProduct(Product product) {
 		// TODO Auto-generated method stub

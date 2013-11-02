@@ -2,6 +2,8 @@ package app.test.springframework;
 
 
  
+import java.util.List;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -10,7 +12,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
 import app.test.springframework.model.Product;
-import java.util.List;
 
 //import org.springframework.context.support.GenericXmlApplicationContext;
  
@@ -19,7 +20,7 @@ public class App {
     public static void main(String[] args) {
  
 	// For XML
-	//ApplicationContext ctx = new GenericXmlApplicationContext("SpringConfig.xml");
+//	ApplicationContext ctx = new GenericXmlApplicationContext("SpringConfig.xml");
  
 	// For Annotation
 	ApplicationContext ctx = 

@@ -1,13 +1,12 @@
 
 package app.saleBadger;
 
-import junit.framework.TestCase;
-
 import org.glassfish.grizzly.http.server.HttpServer;
 
+import com.sun.jersey.core.header.MediaTypes;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.header.MediaTypes;
+import junit.framework.TestCase;
 
 
 public class MainTest extends TestCase {

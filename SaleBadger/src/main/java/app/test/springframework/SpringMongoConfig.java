@@ -2,28 +2,24 @@ package app.test.springframework;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 
+import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
 @Configuration
-public class SpringMongoConfig{
+public class SpringMongoConfig extends AbstractMongoConfiguration{
 
-	public @Bean
-	MongoDbFactory mongoDbFactory() throws Exception {
-		return new SimpleMongoDbFactory(new MongoClient(), "yourdb");
+	@Override
+	protected String getDatabaseName() {
+		return "yourdb";
 	}
- 
-	public @Bean
-	MongoTemplate mongoTemplate() throws Exception {
- 
-		MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory());
- 
-		return mongoTemplate;
- 
+
+	@Override
+	@Bean
+	public Mongo mongo() throws Exception {
+		// TODO Auto-generated method stub
+		return new MongoClient("127.0.0.1");
 	}
- 
 
 }

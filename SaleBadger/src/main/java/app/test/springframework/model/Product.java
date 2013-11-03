@@ -3,13 +3,11 @@ package app.test.springframework.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
  
-@Document(collection = "products")
+@Document(collection = "users")
 public class Product {
  
 	public Product(String description, String price) {
 		// TODO Auto-generated constructor stub
-		this.description = description;
-		this.price = price;
 	}
 
 	@Id

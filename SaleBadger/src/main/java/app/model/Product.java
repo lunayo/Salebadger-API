@@ -1,30 +1,41 @@
 package app.model;
 
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+ 
+@Document(collection = "products")
 public class Product {
-
-	String name;
-	int price;
+	
+	@Id
+	private String id;
+ 
 	String description;
-
-	public Product(String name, int price, String description) {
-		super();
-		this.name = name;
-		this.price = price;
+ 
+	String price;
+ 
+	public Product(String description, String price) {
 		this.description = description;
+		this.price = price;
+	}
+
+	public String getPrice() {
+		// TODO Auto-generated method stub
+		return this.price;
 	}
 
 	public String getName() {
-		return name;
-	}
-
-	public int getPrice() {
-		return price;
+		// TODO Auto-generated method stub
+		return "test name";
 	}
 
 	public String getDescription() {
-		return description;
+		// TODO Auto-generated method stub
+		return this.description;
 	}
-	
-	
 
+
+ 
+	//getter, setter, toString, Constructors
+ 
 }

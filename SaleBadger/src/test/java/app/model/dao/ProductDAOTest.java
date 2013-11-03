@@ -9,33 +9,38 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import app.test.springframework.model.Product;
-
-
+import app.model.Product;
 
 public class ProductDAOTest {
 	Product product;
 	ProductDao productDao;
-	
+
 	@Before
-	public void setUp(){
-		product = new Product("Nokia","450");
+	public void setUp() {
+		product = new Product("Nokia", "450");
 		productDao = new ProductDaoImpl();
+		
+		productDao.clear();
 	}
 
 	@Test
 	public void emptyCollectiongetAllProductsReturnsEmptyList() {
 		List<Product> allProducts = productDao.getAllProducts();
-		assertThat(allProducts.size(),is(0));
+		assertThat(allProducts.size(), is(0));
 	}
-	
-	@Test 
-	public void collectionWithOneProductGetAllProductsListHasSizeOne(){
+
+	@Test
+	public void collectionWithOneProductGetAllProductsListHasSizeOne() {
 		int numberOfProducts = productDao.getAllProducts().size();
-		productDao.addProduct(product);
-		List<Product> updatedNumberOfProducts = productDao.getAllProducts();
-		assertThat(updatedNumberOfProducts.size(),is(1));
 		
+		productDao.addProduct(product);
+		
+		List<Product> updatedNumberOfProducts = productDao.getAllProducts();
+		
+		int expectedSize = numberOfProducts + 1;
+		int size = updatedNumberOfProducts.size();
+		assertThat(size, is(expectedSize));
+
 	}
 
 }

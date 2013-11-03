@@ -25,7 +25,7 @@ public class DatabaseUtilTest {
 		// I can give the desired behaviour to the methods
 		// See the lines below, there really are self-explanatory
 		product = mock(Product.class);
-		when(product.getPrice()).thenReturn(500);
+		when(product.getPrice()).thenReturn("500");
 		when(product.getName()).thenReturn("iPhone 5");
 		when(product.getDescription()).thenReturn(
 				"I phone 5 is better than WP 7!");

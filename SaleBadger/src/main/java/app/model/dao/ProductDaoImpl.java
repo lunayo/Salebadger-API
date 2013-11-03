@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 
 //import app.model.Product;
 import app.test.springframework.SpringMongoConfig;
-import app.test.springframework.model.Product;
+import app.model.Product;
 
 import com.mongodb.MongoClient;
 
@@ -62,4 +62,12 @@ public class ProductDaoImpl implements ProductDao {
 		mongoOperation.save(product);
 	}
 
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		mongoOperation.dropCollection(Product.class);
+		
+	}
+
+	
 }

@@ -9,7 +9,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import app.model.Product;
+import app.test.springframework.model.Product;
+
+
 
 public class ProductDAOTest {
 	Product product;
@@ -17,7 +19,7 @@ public class ProductDAOTest {
 	
 	@Before
 	public void setUp(){
-		product = mock(Product.class);
+		product = new Product("Nokia","450");
 		productDao = new ProductDaoImpl();
 	}
 
@@ -29,9 +31,10 @@ public class ProductDAOTest {
 	
 	@Test 
 	public void collectionWithOneProductGetAllProductsListHasSizeOne(){
+		int numberOfProducts = productDao.getAllProducts().size();
 		productDao.addProduct(product);
-		List<Product> allProducts = productDao.getAllProducts();
-		assertThat(allProducts.size(),is(1));
+		List<Product> updatedNumberOfProducts = productDao.getAllProducts();
+		assertThat(updatedNumberOfProducts.size(),is(1));
 		
 	}
 

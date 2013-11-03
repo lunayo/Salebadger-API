@@ -2,7 +2,9 @@ package app.model.dao;
 
 import java.util.List;
 
-import app.model.Product;
+import app.test.springframework.model.Product;
+
+
 
 public interface ProductDao {
 

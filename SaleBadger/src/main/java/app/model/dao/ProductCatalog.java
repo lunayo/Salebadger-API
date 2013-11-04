@@ -6,7 +6,7 @@ import app.model.Product;
 
 
 
-public interface ProductDao {
+public interface ProductCatalog {
 
 	List<Product> getAllProducts();
 

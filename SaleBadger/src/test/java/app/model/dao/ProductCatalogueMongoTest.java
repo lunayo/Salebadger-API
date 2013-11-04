@@ -11,14 +11,14 @@ import org.junit.Test;
 
 import app.model.Product;
 
-public class ProductDAOTest {
+public class ProductCatalogueMongoTest {
 	Product product;
-	ProductDao productDao;
+	ProductCatalog productDao;
 
 	@Before
 	public void setUp() {
 		product = new Product("Nokia", "450");
-		productDao = new ProductDaoImpl();
+		productDao = new ProductCatalogMongo();
 		
 		productDao.clear();
 	}

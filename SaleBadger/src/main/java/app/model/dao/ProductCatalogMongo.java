@@ -7,12 +7,13 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.data.mongodb.core.MongoOperations;
 
 //import app.model.Product;
-import app.test.springframework.SpringMongoConfig;
+
 import app.model.Product;
+import app.model.dao.config.SpringMongoConfig;
 
 import com.mongodb.MongoClient;
 
-public class ProductDaoImpl implements ProductDao {
+public class ProductCatalogMongo implements ProductCatalog {
 
 	// DataSource dataSource = new MongoDataSource();
 	MongoClient mongoClient;
@@ -58,7 +59,7 @@ public class ProductDaoImpl implements ProductDao {
 		// "description", product.getDescription());
 		//
 		// productsCollection.insert(productToInsert);
-		
+
 		mongoOperation.save(product);
 	}
 
@@ -66,8 +67,7 @@ public class ProductDaoImpl implements ProductDao {
 	public void clear() {
 		// TODO Auto-generated method stub
 		mongoOperation.dropCollection(Product.class);
-		
+
 	}
 
-	
 }

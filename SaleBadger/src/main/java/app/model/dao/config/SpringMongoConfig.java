@@ -1,4 +1,4 @@
-package app.test.springframework;
+package app.model.dao.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

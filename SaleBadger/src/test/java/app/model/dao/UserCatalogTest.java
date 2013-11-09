@@ -13,7 +13,7 @@ public class UserCatalogTest {
 
 	public void setUp() {
 	user = new User("samatase","123123123");
-	userCatalog = new UsersCollection("users");
+	userCatalog = new UserCatalogMongo();
 	}
 
 	@Test

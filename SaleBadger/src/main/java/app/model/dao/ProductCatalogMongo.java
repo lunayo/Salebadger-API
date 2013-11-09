@@ -8,16 +8,14 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import app.model.Product;
 import app.model.dao.config.SpringMongoConfig;
 
-import com.mongodb.MongoClient;
 
 public class ProductCatalogMongo implements ProductCatalog {
 
 	// DataSource dataSource = new MongoDataSource();
-	MongoClient mongoClient;
-
-	ApplicationContext ctx = new AnnotationConfigApplicationContext(
+	
+	private ApplicationContext ctx = new AnnotationConfigApplicationContext(
 			SpringMongoConfig.class);
-	MongoOperations mongoOperation = (MongoOperations) ctx
+	private MongoOperations mongoOperation = (MongoOperations) ctx
 			.getBean("mongoTemplate");
 
 	@Override

@@ -20,7 +20,7 @@ public class UserCatalogMongo implements UserCatalog {
 	private MongoOperations mongoOperation = (MongoOperations) ctx
 			.getBean("mongoTemplate");
 
-	private UserCatalogMongo() {
+	public UserCatalogMongo() {
 
 	}
 

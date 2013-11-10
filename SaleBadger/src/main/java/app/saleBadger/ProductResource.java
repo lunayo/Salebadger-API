@@ -7,7 +7,7 @@ import javax.ws.rs.Produces;
 
 // The Java class will be hosted at the URI path "/myresource"
 @Path("/products")
-public class ProductEndpoint {
+public class ProductResource {
 
     
     // The Java method will process HTTP GET requests

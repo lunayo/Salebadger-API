@@ -13,14 +13,9 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-
 public class UserEndPointTest {
 
 	private static HttpServer httpServer;
-	private static WebResource webResource;
-	private static HttpURLConnection urlConnection;
 	private final String BASE_URL = "http://localhost:8181/api/v1/";
 	private final String USER_AGENT = "Mozilla/5.0";
 	
@@ -28,9 +23,6 @@ public class UserEndPointTest {
 	public static void setUpBeforeClass() throws Exception {
 		// run the httpserver
 		httpServer = Main.startServer();
-		
-		Client client = Client.create();
-		webResource = client.resource(Main.BASE_URI);
 
 	}
 	

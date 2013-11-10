@@ -29,7 +29,7 @@ public class UserCatalogMongo implements UserCatalog {
 	}
 
 	@Override
-	public void addUser(User user) {
+	public void add(User user) {
 		mongoOperation.save(user);
 	}
 

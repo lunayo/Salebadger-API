@@ -27,7 +27,7 @@ public class UserCatalogTest {
 	@Test
 	public void addOneUserToUsersCollection() {
 		long collectionSize = userCatalog.count();
-		userCatalog.addUser(user);
+		userCatalog.add(user);
 
 		long actualSize = userCatalog.count();
 		long expectedSize = collectionSize + 1;
@@ -42,7 +42,7 @@ public class UserCatalogTest {
 		for (int i = 0; i < numberOfproductsToAdd; i++) {
 			user = new User("user" + i, "123123123", "Emmanouil", "Samatas",
 					"samatase@hotmail.com");
-			userCatalog.addUser(user);
+			userCatalog.add(user);
 		}
 
 		long actualSize = userCatalog.count();
@@ -53,7 +53,7 @@ public class UserCatalogTest {
 
 	@Test
 	public void clearUserCatalogIsEmpty() {
-		userCatalog.addUser(user);
+		userCatalog.add(user);
 		userCatalog.clear();
 
 		long catalogSize = userCatalog.count();
@@ -66,7 +66,7 @@ public class UserCatalogTest {
 		String username = "lunayo";
 		User userToAdd = new User(username, "pass1234", "Iskandar", "null",
 				"incre@codebadge.com");
-		userCatalog.addUser(userToAdd);
+		userCatalog.add(userToAdd);
 		User userFound = userCatalog.find(username);
 
 		assertThat(userFound, is(userToAdd));

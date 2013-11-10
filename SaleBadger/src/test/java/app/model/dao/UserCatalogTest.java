@@ -1,27 +1,27 @@
 package app.model.dao;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.internal.listeners.CollectCreatedMocks;
 
-import static org.mockito.Mockito.mock;
 import app.model.User;
 
 public class UserCatalogTest {
 
 	User user;
 	UserCatalog userCatalog;
-	User mockUser;
+
 	@Before
 	public void setUp() {
 		user = new User("samatase", "123123123", "Emmanouil", "Samatas",
 				"samatase@hotmail.com");
 		userCatalog = UserCatalogMongo.getInstance();
-		mockUser = mock(User.class);
-		
+		userCatalog.clear();
+
 	}
 
 	@Test
@@ -44,12 +44,33 @@ public class UserCatalogTest {
 					"samatase@hotmail.com");
 			userCatalog.addUser(user);
 		}
-		
+
 		long actualSize = userCatalog.count();
 		long expectedSize = collectionSize + numberOfproductsToAdd;
-		
+
 		assertThat(actualSize, is(expectedSize));
 	}
 
-	
+	@Test
+	public void clearUserCatalogIsEmpty() {
+		userCatalog.addUser(user);
+		userCatalog.clear();
+
+		long catalogSize = userCatalog.count();
+
+		assertThat(catalogSize, is(0L));
+	}
+
+	@Test
+	public void addAUserAndFindByUsernameReturnsUser() {
+		String username = "lunayo";
+		User userToAdd = new User(username, "pass1234", "Iskandar", "null",
+				"incre@codebadge.com");
+		userCatalog.addUser(userToAdd);
+		User userFound = userCatalog.find(username);
+
+		assertThat(userFound, is(userToAdd));
+
+	}
+
 }

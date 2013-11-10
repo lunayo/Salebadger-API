@@ -1,5 +1,8 @@
 package app.model.dao;
 
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -34,6 +37,19 @@ public class UserCatalogMongo implements UserCatalog {
 	public long count() {
 		Query query = new Query();
 		return mongoOperation.count(query, User.class);
+	}
+
+	@Override
+	public void clear() {
+		mongoOperation.dropCollection(User.class);
+		
+	}
+
+	@Override
+	public User find(String username) {
+		Query findByName = query(where("username").is(username));
+		User user = mongoOperation.findOne(findByName, User.class);
+		return user;
 	}
 
 }

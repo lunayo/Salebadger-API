@@ -8,4 +8,8 @@ public interface UserCatalog {
 
 	long count();
 
+	void clear();
+
+	User find(String username);
+
 }

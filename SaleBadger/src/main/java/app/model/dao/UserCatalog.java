@@ -4,8 +4,12 @@ import app.model.User;
 
 public interface UserCatalog {
 
-	void addUser(User user);
+	void add(User user);
 
 	long count();
+
+	void clear();
+
+	User find(String username);
 
 }

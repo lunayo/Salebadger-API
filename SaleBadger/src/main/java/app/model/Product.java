@@ -10,9 +10,9 @@ public class Product {
 	@Id
 	private String id;
  
-	String description;
+	private String description;
  
-	String price;
+	private String price;
  
 	public Product(String description, String price) {
 		this.description = description;

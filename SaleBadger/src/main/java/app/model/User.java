@@ -1,17 +1,20 @@
 package app.model;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.sun.istack.NotNull;
 
 @Document(collection = "users")
 public class User {
 
 	@Id
 	@NotNull
+	@Size(min = 6, max = 20)
 	private String username;
 	@NotNull
+	@Size(min = 6, max = 20)
 	private String password;
 	@NotNull
 	private String firstName;

@@ -2,10 +2,8 @@ package app.model.dao;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import app.model.User;

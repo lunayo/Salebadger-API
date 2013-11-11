@@ -34,6 +34,7 @@ public class Main {
         final Map<String, String> initParams = new HashMap<String, String>();
 
         initParams.put("com.sun.jersey.config.property.packages", "app.saleBadger");
+        initParams.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
 
         System.out.println("Starting grizzly2...");
         return GrizzlyWebContainerFactory.create(BASE_URI, initParams);

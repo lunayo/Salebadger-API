@@ -29,8 +29,10 @@ public class UserResource {
     @GET 
     @Path("/{username}")
     public User getUser(@NotNull @PathParam("username") String username) {
+    	
     	UserCatalog userCatalog = UserCatalogMongo.getInstance();
         User user = userCatalog.find(username);
+        
         if (user != null) {
         	return user;
         }
@@ -48,7 +50,7 @@ public class UserResource {
     @PUT
     @Path("/{username}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void updateUser(@PathParam("username") String username) {
+    public void updateUser(@Valid User user) {
     	
     }
     

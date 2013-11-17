@@ -9,7 +9,7 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
 @Configuration
-@EnableMongoRepositories(basePackages = "app.model.dao2")
+@EnableMongoRepositories(basePackages = "app.model.dao")
 public class SpringMongoConfig extends AbstractMongoConfiguration{
 
 	@Override

@@ -3,24 +3,24 @@ package app.model.dao2;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import app.configuration.MongoConfiguration;
 import app.model.User;
+import app.model.dao.config.SpringMongoConfig;
 
 public class App {
 
-//	@SuppressWarnings("deprecation")
-//	@Bean
-//	Mongo mongo() throws UnknownHostException {
-//		return new Mongo("localhost");
-//	}
-//
-//	@Bean
-//	MongoTemplate mongoTemplate(Mongo mongo) {
-//		return new MongoTemplate(mongo, "gs-accessing-data-mongo");
-//	}
-	
+	// @SuppressWarnings("deprecation")
+	// @Bean
+	// Mongo mongo() throws UnknownHostException {
+	// return new Mongo("localhost");
+	// }
+	//
+	// @Bean
+	// MongoTemplate mongoTemplate(Mongo mongo) {
+	// return new MongoTemplate(mongo, "gs-accessing-data-mongo");
+	// }
+
 	public static void main(String args[]) {
-		ApplicationContext context = new AnnotationConfigApplicationContext(MongoConfiguration.class);
+		ApplicationContext context = new AnnotationConfigApplicationContext(SpringMongoConfig.class);
         UserRepositoryInterface userRepository = context.getBean(UserRepositoryInterface.class);
 //	        User user = new User("a", "b", "c", "d", "e");
 //	        
@@ -34,11 +34,16 @@ public class App {
 //	        }
 //	        System.out.println();
 //	        context.close();
-	     
-		User user = userRepository.findOne("l");
-		if(user != null) {
-			System.out.print("It works! :)");
-		}
+	    
+        
+        User userToAdd = new User("sa__1m" ,"a2", "a3", "a4", "a5"); 
+        
+	    System.out.println(userRepository.count());
+	    System.out.println(userRepository.save(userToAdd));
+	    System.out.println(userRepository.count());
+		
+//		if(user != null) {
+//			System.out.print("It works! :)");
+//		}
 	}
-
 }

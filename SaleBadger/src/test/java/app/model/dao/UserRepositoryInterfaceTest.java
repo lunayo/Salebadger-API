@@ -10,12 +10,12 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import app.model.User;
 import app.model.dao.config.SpringMongoConfig;
-import app.model.dao.UserRepositoryInterface;
+import app.model.dao.UserRepository;
 
 public class UserRepositoryInterfaceTest {
 	
 	ApplicationContext context = new AnnotationConfigApplicationContext(SpringMongoConfig.class);
-    UserRepositoryInterface userRepository = context.getBean(UserRepositoryInterface.class);
+    UserRepository userRepository = context.getBean(UserRepository.class);
 	User user;
 	
     @Before

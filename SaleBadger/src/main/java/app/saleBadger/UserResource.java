@@ -41,7 +41,6 @@ public class UserResource {
     }
     
     @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void addUser(@Valid User user) {
     	UserCatalog userCatalog = UserCatalogMongo.getInstance();
     	userCatalog.add(user);
@@ -49,7 +48,6 @@ public class UserResource {
     
     @PUT
     @Path("/{username}")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void updateUser(@Valid User user) {
     	
     }

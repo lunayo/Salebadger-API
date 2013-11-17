@@ -1,9 +1,9 @@
 package app.saleBadger;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.hamcrest.CoreMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import javax.ws.rs.core.MediaType;
 
@@ -16,11 +16,12 @@ import app.model.User;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class UserResourceTest {
 
 	private static HttpServer httpServer;
-	private final String BASE_URL = "http://localhost:8181/api/v1/";
+	private final String BASE_URL = "http://localhost:8181/api/v1";
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -67,11 +68,15 @@ public class UserResourceTest {
 		String requestURL = BASE_URL + "/users";
 		try {
 			User user = mock(User.class);
+			when(user.getUsername()).thenReturn("lunayo");
+			when(user.getEmail()).thenReturn("lun@codebadge.com");
+			when(user.getFirstName()).thenReturn("Iskandar");
+			when(user.getLastName()).thenReturn("Goh");
+			when(user.getPassword()).thenReturn("qwertyui");
 			Client client = Client.create();
 			WebResource webResource = client.resource(requestURL);
 			ClientResponse response = webResource.accept(
-					MediaType.APPLICATION_JSON).put(ClientResponse.class);
-
+					MediaType.APPLICATION_JSON).post(ClientResponse.class, user);
 			assertThat(response.getStatus(), is(200));
 
 		} catch (Exception e) {

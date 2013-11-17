@@ -3,12 +3,15 @@ package app.saleBadger;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.hamcrest.CoreMatchers.*;
+import static org.mockito.Mockito.*;
 
 import javax.ws.rs.core.MediaType;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import app.model.User;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -30,7 +33,7 @@ public class UserResourceTest {
 
 		httpServer.stop();
 	}
-	
+
 	private void assertResponseCode(String requestURL, int responseCode) {
 		try {
 
@@ -38,7 +41,7 @@ public class UserResourceTest {
 			WebResource webResource = client.resource(requestURL);
 			ClientResponse response = webResource.accept(
 					MediaType.APPLICATION_JSON).get(ClientResponse.class);
-			
+
 			assertThat(response.getStatus(), is(responseCode));
 
 		} catch (Exception e) {
@@ -55,13 +58,25 @@ public class UserResourceTest {
 
 	@Test
 	public void getUserResourceWithInvalidUsername() {
-		String requestURL = BASE_URL + "/users/lunayo";
+		String requestURL = BASE_URL + "/users/lun";
 		assertResponseCode(requestURL, 404);
 	}
 
 	@Test
 	public void addUserToResourceAndCheckResponseCode() {
-		fail("Not yet implemented");
+		String requestURL = BASE_URL + "/users";
+		try {
+			User user = mock(User.class);
+			Client client = Client.create();
+			WebResource webResource = client.resource(requestURL);
+			ClientResponse response = webResource.accept(
+					MediaType.APPLICATION_JSON).put(ClientResponse.class);
+
+			assertThat(response.getStatus(), is(200));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -79,7 +94,7 @@ public class UserResourceTest {
 			WebResource webResource = client.resource(requestURL);
 			ClientResponse response = webResource.accept(
 					MediaType.APPLICATION_JSON).put(ClientResponse.class);
-			
+
 			assertThat(response.getStatus(), is(200));
 
 		} catch (Exception e) {

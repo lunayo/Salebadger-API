@@ -3,6 +3,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import app.model.User;
 
-public interface UserRepository extends CrudRepository<User, String> {
+public interface UserRepository extends CrudRepository<User, String>, UserRepositoryCustom {
 
 }

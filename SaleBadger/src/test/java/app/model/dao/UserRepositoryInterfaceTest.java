@@ -30,9 +30,7 @@ public class UserRepositoryInterfaceTest {
 	@Test
 	public void addOneUser() {
 		long emptyDb = userRepository.count();
-		
 		userRepository.save(user);
-		
 		long newSize = userRepository.count();
 		assertThat(newSize, is(emptyDb + 1));
 		

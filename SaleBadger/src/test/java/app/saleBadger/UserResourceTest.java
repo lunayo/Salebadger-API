@@ -16,17 +16,25 @@ import app.model.User;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.LoggingFilter;
+import com.sun.jersey.api.json.JSONConfiguration;
 
 public class UserResourceTest {
 
 	private static HttpServer httpServer;
 	private final String BASE_URL = "http://localhost:8181/api/v1";
+	private static Client client;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		// run the httpserver
 		httpServer = Main.startServer();
-
+		ClientConfig clientConfig = new DefaultClientConfig();
+		clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
+		client = Client.create(clientConfig);
+		client.addFilter(new LoggingFilter(System.out));
 	}
 
 	protected void tearDown() throws Exception {
@@ -38,8 +46,6 @@ public class UserResourceTest {
 	public void getUserResourceAndCheckResponseCode() {
 		String requestURL = BASE_URL + "/users/lunayo";
 		try {
-
-			Client client = Client.create();
 			WebResource webResource = client.resource(requestURL);
 			ClientResponse response = webResource.accept(
 					MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -56,8 +62,6 @@ public class UserResourceTest {
 	public void getUserResourceWithInvalidUsername() {
 		String requestURL = BASE_URL + "/users/lun";
 		try {
-
-			Client client = Client.create();
 			WebResource webResource = client.resource(requestURL);
 			ClientResponse response = webResource.accept(
 					MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -75,10 +79,10 @@ public class UserResourceTest {
 		try {
 			User user = new User(UUID.randomUUID().toString(), "qwertyui",
 					"lun@codebadge.com", "Iskandar", "Goh");
-			Client client = Client.create();
 			WebResource webResource = client.resource(requestURL);
-			ClientResponse response = webResource.accept(
-					MediaType.APPLICATION_JSON)
+			ClientResponse response = webResource
+					.type(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON)
 					.post(ClientResponse.class, user);
 			assertThat(response.getStatus(), is(200));
 
@@ -93,10 +97,10 @@ public class UserResourceTest {
 		try {
 			User user = new User("lunayo", "qwertyui", "lun@codebadge.com",
 					"Iskandar", "Goh");
-			Client client = Client.create();
 			WebResource webResource = client.resource(requestURL);
-			ClientResponse response = webResource.accept(
-					MediaType.APPLICATION_JSON)
+			ClientResponse response = webResource
+					.type(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON)
 					.post(ClientResponse.class, user);
 			assertThat(response.getStatus(), is(409));
 
@@ -126,8 +130,6 @@ public class UserResourceTest {
 	public void updateUserInResourceAndCheckResponseCode() {
 		String requestURL = BASE_URL + "/users/lunayo";
 		try {
-
-			Client client = Client.create();
 			WebResource webResource = client.resource(requestURL);
 			ClientResponse response = webResource.accept(
 					MediaType.APPLICATION_JSON).put(ClientResponse.class);

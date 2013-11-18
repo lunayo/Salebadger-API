@@ -2,6 +2,7 @@ package app.model;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,6 +27,8 @@ public class User {
 	@Email
 	private String email;
 
+	public User() {}
+
 	public User(String username, String password, String email,
 			String firstName, String lastName) {
 		super();
@@ -34,6 +37,26 @@ public class User {
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
+	}
+	
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getUsername() {

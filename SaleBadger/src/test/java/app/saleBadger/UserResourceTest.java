@@ -2,8 +2,8 @@ package app.saleBadger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
+import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
@@ -16,7 +16,6 @@ import app.model.User;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class UserResourceTest {
 
@@ -35,7 +34,9 @@ public class UserResourceTest {
 		httpServer.stop();
 	}
 
-	private void assertResponseCode(String requestURL, int responseCode) {
+	@Test
+	public void getUserResourceAndCheckResponseCode() {
+		String requestURL = BASE_URL + "/users/lunayo";
 		try {
 
 			Client client = Client.create();
@@ -43,7 +44,25 @@ public class UserResourceTest {
 			ClientResponse response = webResource.accept(
 					MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
-			assertThat(response.getStatus(), is(responseCode));
+			assertThat(response.getStatus(), is(200));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void getUserResourceWithInvalidUsername() {
+		String requestURL = BASE_URL + "/users/lun";
+		try {
+
+			Client client = Client.create();
+			WebResource webResource = client.resource(requestURL);
+			ClientResponse response = webResource.accept(
+					MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+			assertThat(response.getStatus(), is(404));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -51,32 +70,16 @@ public class UserResourceTest {
 	}
 
 	@Test
-	public void getUserResourceAndCheckResponseCode() {
-		String requestURL = BASE_URL + "/users/lunayo";
-		assertResponseCode(requestURL, 200);
-
-	}
-
-	@Test
-	public void getUserResourceWithInvalidUsername() {
-		String requestURL = BASE_URL + "/users/lun";
-		assertResponseCode(requestURL, 404);
-	}
-
-	@Test
 	public void addUserToResourceAndCheckResponseCode() {
 		String requestURL = BASE_URL + "/users";
 		try {
-			User user = mock(User.class);
-			when(user.getUsername()).thenReturn("lunayo");
-			when(user.getEmail()).thenReturn("lun@codebadge.com");
-			when(user.getFirstName()).thenReturn("Iskandar");
-			when(user.getLastName()).thenReturn("Goh");
-			when(user.getPassword()).thenReturn("qwertyui");
+			User user = new User(UUID.randomUUID().toString(), "qwertyui",
+					"lun@codebadge.com", "Iskandar", "Goh");
 			Client client = Client.create();
 			WebResource webResource = client.resource(requestURL);
 			ClientResponse response = webResource.accept(
-					MediaType.APPLICATION_JSON).post(ClientResponse.class, user);
+					MediaType.APPLICATION_JSON)
+					.post(ClientResponse.class, user);
 			assertThat(response.getStatus(), is(200));
 
 		} catch (Exception e) {
@@ -85,10 +88,39 @@ public class UserResourceTest {
 	}
 
 	@Test
-	public void deleteUserFromResourceAndCheckResponseCode() {
-		String requestURL = BASE_URL + "/users/lunayo";
-		this.assertResponseCode(requestURL, 204);
+	public void addUserResourceWithExistedUser() {
+		String requestURL = BASE_URL + "/users";
+		try {
+			User user = new User("lunayo", "qwertyui", "lun@codebadge.com",
+					"Iskandar", "Goh");
+			Client client = Client.create();
+			WebResource webResource = client.resource(requestURL);
+			ClientResponse response = webResource.accept(
+					MediaType.APPLICATION_JSON)
+					.post(ClientResponse.class, user);
+			assertThat(response.getStatus(), is(409));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+
+	// @Test
+	// public void deleteUserFromResourceAndCheckResponseCode() {
+	// String requestURL = BASE_URL + "/users/lunayo";
+	// try {
+	//
+	// Client client = Client.create();
+	// WebResource webResource = client.resource(requestURL);
+	// ClientResponse response = webResource.accept(
+	// MediaType.APPLICATION_JSON).delete(ClientResponse.class);
+	//
+	// assertThat(response.getStatus(), is(204));
+	//
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
 
 	@Test
 	public void updateUserInResourceAndCheckResponseCode() {

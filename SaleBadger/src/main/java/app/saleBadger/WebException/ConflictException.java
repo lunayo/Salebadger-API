@@ -1,5 +1,6 @@
 package app.saleBadger.WebException;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
@@ -8,13 +9,13 @@ import javax.ws.rs.core.Response;
 
 import app.model.Validator.ValidationError;
 
-public class BadRequestException extends WebApplicationException {
+public class ConflictException extends WebApplicationException {
 
 	private static final long serialVersionUID = 1L;
 
-	public BadRequestException(List<String> messages) {
-		super(Response.status(Response.Status.BAD_REQUEST)
-				.entity(getValidationList(messages))
+	public ConflictException(List<String> messages, URI location) {
+		super(Response.status(Response.Status.CONFLICT)
+				.entity(getValidationList(messages)).location(location)
 				.type(MediaType.APPLICATION_JSON).build());
 	}
 
@@ -22,9 +23,10 @@ public class BadRequestException extends WebApplicationException {
 		ValidationError validationError = new ValidationError();
 		for (String message : errorMessages) {
 			validationError.addError(message,
-					Response.Status.BAD_REQUEST.getStatusCode());
+					Response.Status.CONFLICT.getStatusCode());
 		}
 
 		return validationError;
 	}
+
 }

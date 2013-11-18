@@ -1,29 +1,47 @@
 package app.model.Validator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class ValidationError {
 	
-	private String message;
-	private int responseCode;
+	private List<Error> errors;
 	
-	public ValidationError(String message, int responseCode) {
-		this.setMessage(message);
-		this.setResponseCode(responseCode);
+	public ValidationError() {
+		errors = new ArrayList<Error>();
+	}
+	
+	public void addError(String errorMessage, int errorCode) {
+		Error error = new Error(errorMessage, errorCode);
+		errors.add(error);
 	}
 
-	public int getResponseCode() {
-		return responseCode;
+	public List<Error> getErrors() {
+		return errors;
 	}
 
-	public void setResponseCode(int responseCode) {
-		this.responseCode = responseCode;
-	}
 
-	public String getMessage() {
-		return message;
-	}
+	private class Error {
+		
+		private String errorMessage;
+		private int errorCode;
+		
+		private Error(String errorMessage, int errorCode) {
+			this.errorMessage = errorMessage;
+			this.errorCode = errorCode;
+		}
+		
+		@SuppressWarnings("unused")
+		public String getErrorMessage() {
+			return errorMessage;
+		}
 
-	public void setMessage(String message) {
-		this.message = message;
+		@SuppressWarnings("unused")
+		public int getErrorCode() {
+			return errorCode;
+		}
+
 	}
 
 }
+

@@ -2,12 +2,11 @@ package app.model;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import app.model.Validator.Email;
+import app.model.Validator.EmailIsValid;
 
 @Document(collection = "users")
 public class User {
@@ -24,7 +23,7 @@ public class User {
 	@NotNull
 	private String lastName;
 	@NotNull
-	@Email
+	@EmailIsValid
 	private String email;
 
 	public User() {}

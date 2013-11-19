@@ -42,6 +42,21 @@ public class UserResourceTest {
 		httpServer.stop();
 	}
 
+	private void addUserToResourceAndAssertResponse(User user, int responseCode) {
+		String requestURL = BASE_URL + "/users";
+		try {
+			WebResource webResource = client.resource(requestURL);
+			ClientResponse response = webResource
+					.type(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON)
+					.post(ClientResponse.class, user);
+			assertThat(response.getStatus(), is(responseCode));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Test
 	public void getUserResourceAndCheckResponseCode() {
 		String requestURL = BASE_URL + "/users/lunayo";
@@ -75,38 +90,23 @@ public class UserResourceTest {
 
 	@Test
 	public void addUserToResourceAndCheckResponseCode() {
-		String requestURL = BASE_URL + "/users";
-		try {
-			User user = new User(UUID.randomUUID().toString(), "qwertyui",
-					"lun@codebadge.com", "Iskandar", "Goh");
-			WebResource webResource = client.resource(requestURL);
-			ClientResponse response = webResource
-					.type(MediaType.APPLICATION_JSON)
-					.accept(MediaType.APPLICATION_JSON)
-					.post(ClientResponse.class, user);
-			assertThat(response.getStatus(), is(200));
+		User user = new User(UUID.randomUUID().toString(), "qwertyui",
+				"lun@codebadge.com", "Iskandar", "Goh");
+		addUserToResourceAndAssertResponse(user, 200);
+	}
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	@Test
+	public void addUserToResourceWithInvalidPropertiesAndCheckResponseCode() {
+		User user = new User("df", "qwertyui", "123",
+				"Iskandar", "Goh");
+		addUserToResourceAndAssertResponse(user, 400);
 	}
 
 	@Test
 	public void addUserResourceWithExistedUser() {
-		String requestURL = BASE_URL + "/users";
-		try {
-			User user = new User("lunayo", "qwertyui", "lun@codebadge.com",
-					"Iskandar", "Goh");
-			WebResource webResource = client.resource(requestURL);
-			ClientResponse response = webResource
-					.type(MediaType.APPLICATION_JSON)
-					.accept(MediaType.APPLICATION_JSON)
-					.post(ClientResponse.class, user);
-			assertThat(response.getStatus(), is(409));
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		User user = new User("lunayo", "qwertyui", "lun@codebadge.com",
+				"Iskandar", "Goh");
+		addUserToResourceAndAssertResponse(user, 409);
 	}
 
 	// @Test

@@ -2,11 +2,15 @@
 package app.saleBadger;
 
 import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
+
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.server.ServerProperties;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.ws.rs.core.UriBuilder;
 
 
@@ -35,6 +39,8 @@ public class Main {
 
         initParams.put("com.sun.jersey.config.property.packages", "app.saleBadger");
         initParams.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
+        initParams.put(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, "true");
+        initParams.put(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, "true");
 
         System.out.println("Starting grizzly2...");
         return GrizzlyWebContainerFactory.create(BASE_URI, initParams);

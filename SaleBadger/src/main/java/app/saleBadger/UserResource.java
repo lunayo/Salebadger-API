@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -20,7 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -32,7 +28,7 @@ import app.saleBadger.WebException.ConflictException;
 import app.saleBadger.WebException.NotFoundException;
 
 // The users resource will be hosted at the URI path "/users"
-@Path("/api/v1/users")
+@Path("v1/users/")
 // The Java method will produce content identified by the MIME Media
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
@@ -44,8 +40,8 @@ public class UserResource {
 
 	// The Java method will process HTTP GET requests
 	@GET
-	@Path("/{username}")
-	public User getUser(@NotEmpty @PathParam("username") String username) {
+	@Path("{username}")
+	public User getUser(@PathParam("username") String username) {
 
 		List<String> errors = new ArrayList<String>();
 		User user = userRepository.findOne(username);

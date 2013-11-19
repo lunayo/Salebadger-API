@@ -14,7 +14,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
-import org.hibernate.validator.internal.constraintvalidators.EmailValidator;
+import app.model.Validator.EmailIsValid.EmailValidator;
 
 @Retention(RUNTIME)
 @Target({ FIELD, METHOD })

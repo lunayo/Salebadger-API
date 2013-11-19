@@ -12,10 +12,8 @@ import app.model.Validator.EmailIsValid;
 public class User {
 
 	@Id
-	@NotNull
 	@Size(min = 6, max = 20)
 	private String username;
-	@NotNull
 	@Size(min = 6, max = 20)
 	private String password;
 	@NotNull

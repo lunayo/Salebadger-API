@@ -1,58 +1,45 @@
-
 package app.saleBadger;
-
-import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
-
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.server.ServerProperties;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.ws.rs.core.UriBuilder;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 
-
+/**
+ * Main class.
+ *
+ */
 public class Main {
+    // Base URI the Grizzly HTTP server will listen on
+    public static final String BASE_URI = "http://localhost:8181/api/";
 
-    private static int getPort(int defaultPort) {
-        //grab port from environment, otherwise fall back to default port 9998
-        String httpPort = System.getProperty("jersey.test.port");
-        if (null != httpPort) {
-            try {
-                return Integer.parseInt(httpPort);
-            } catch (NumberFormatException e) {
-            }
-        }
-        return defaultPort;
+    /**
+     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
+     * @return Grizzly HTTP server.
+     */
+    public static HttpServer startServer() {
+        // create a resource config that scans for JAX-RS resources and providers
+        // in com.example package
+        final ResourceConfig rc = new ResourceConfig().packages("app.saleBadger");
+        // create and start a new instance of grizzly http server
+        // exposing the Jersey application at BASE_URI
+        
+        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 
-    private static URI getBaseURI() {
-        return UriBuilder.fromUri("http://localhost/").port(getPort(8181)).build();
-    }
-
-    public static final URI BASE_URI = getBaseURI();
-    
-    protected static HttpServer startServer() throws IOException {
-        final Map<String, String> initParams = new HashMap<String, String>();
-
-        initParams.put("com.sun.jersey.config.property.packages", "app.saleBadger");
-        initParams.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
-        initParams.put(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, "true");
-        initParams.put(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, "true");
-
-        System.out.println("Starting grizzly2...");
-        return GrizzlyWebContainerFactory.create(BASE_URI, initParams);
-    }
-    
+    /**
+     * Main method.
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
-        // Grizzly 2 initialization
-        HttpServer httpServer = startServer();
+        final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "
-                + "%sapplication.wadl\nHit enter to stop it...",
-                BASE_URI));
+                + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
         System.in.read();
-        httpServer.stop();
-    }    
+        server.stop();
+    }
 }
+

@@ -6,13 +6,13 @@ import javax.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import app.model.Validator.EmailIsValid;
+import app.model.Constraints.EmailIsValid;
 
 @Document(collection = "users")
 public class User {
 
 	@Id
-	@Size(min = 6, max = 20)
+	@Size(min = 6)
 	private String username;
 	@Size(min = 6, max = 20)
 	private String password;

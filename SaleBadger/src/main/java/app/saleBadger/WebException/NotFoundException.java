@@ -6,7 +6,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import app.model.Validator.ValidationError;
+import app.saleBadger.Validator.ErrorValidationMapper;
 
 public class NotFoundException extends WebApplicationException {
 
@@ -18,8 +18,8 @@ public class NotFoundException extends WebApplicationException {
 				.type(MediaType.APPLICATION_JSON).build());
 	}
 
-	public static ValidationError getValidationList(List<String> errorMessages) {
-		ValidationError validationError = new ValidationError();
+	public static ErrorValidationMapper getValidationList(List<String> errorMessages) {
+		ErrorValidationMapper validationError = new ErrorValidationMapper();
 		for (String message : errorMessages) {
 			validationError.addError(message,
 					Response.Status.NOT_FOUND.getStatusCode());

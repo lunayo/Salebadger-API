@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.client.ClientResponse;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class UserResourceTest {
 		// start the server
 		server = Main.startServer();
 		// create the client
-		Client c = ClientBuilder.newClient();
+		Client c = ClientBuilder.newClient().register(JacksonFeature.class);
 
 		target = c.target(Main.BASE_URI);
 	}
@@ -39,6 +40,20 @@ public class UserResourceTest {
 	@After
 	public void tearDown() throws Exception {
 		server.stop();
+	}
+
+	private void getUserResourceAndAssertResponse(String username,
+			int responseCode) {
+		try {
+			Response response = target.path("v1/users/" + username)
+					.request(MediaType.APPLICATION_JSON).get(Response.class);
+
+			assertThat(response.getStatus(), is(responseCode));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new InternalServerErrorException();
+		}
 	}
 
 	private void addUserToResourceAndAssertResponse(User user, int responseCode) {
@@ -59,29 +74,17 @@ public class UserResourceTest {
 
 	@Test
 	public void getUserResourceAndCheckResponseCode() {
-		try {
-			Response response = target.path("v1/users/lunayo")
-					.request(MediaType.APPLICATION_JSON).get(Response.class);
-			assertThat(response.getStatus(), is(200));
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new InternalServerErrorException();
-		}
+		getUserResourceAndAssertResponse("lunayo", 200);
 	}
 
 	@Test
 	public void getUserResourceWithInvalidUsername() {
-		try {
-			ClientResponse response = target.path("v1/users/lun")
-					.request(MediaType.APPLICATION_JSON)
-					.get(ClientResponse.class);
+		getUserResourceAndAssertResponse("lun", 400);
+	}
 
-			assertThat(response.getStatus(), is(404));
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new InternalServerErrorException();
-		}
+	@Test
+	public void getUserResourceWithNonExistedUsername() {
+		getUserResourceAndAssertResponse("lunanana", 404);
 	}
 
 	@Test
@@ -93,7 +96,7 @@ public class UserResourceTest {
 
 	@Test
 	public void addUserToResourceWithInvalidPropertiesAndCheckResponseCode() {
-		User user = new User("df", "qwertyui", "123", "Iskandar", "Goh");
+		User user = new User("dfse", "qwertyui", "123", "Iskandar", "Goh");
 		addUserToResourceAndAssertResponse(user, 400);
 	}
 
@@ -104,20 +107,20 @@ public class UserResourceTest {
 		addUserToResourceAndAssertResponse(user, 409);
 	}
 
-//	@Test
-//	public void deleteUserFromResourceAndCheckResponseCode() {
-//		try {
-//			Response response = target
-//					.path("v1/users/lunayo")
-//					.request(MediaType.APPLICATION_JSON)
-//					.delete();
-//
-//			assertThat(response.getStatus(), is(204));
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+	// @Test
+	// public void deleteUserFromResourceAndCheckResponseCode() {
+	// try {
+	// Response response = target
+	// .path("v1/users/lunayo")
+	// .request(MediaType.APPLICATION_JSON)
+	// .delete();
+	//
+	// assertThat(response.getStatus(), is(204));
+	//
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
 
 	@Test
 	public void updateUserInResourceAndCheckResponseCode() {

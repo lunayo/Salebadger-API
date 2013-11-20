@@ -1,13 +1,13 @@
-package app.model.Validator;
+package app.saleBadger.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ValidationError {
+public final class ErrorValidationMapper {
 	
 	private List<Error> errors;
 	
-	public ValidationError() {
+	public ErrorValidationMapper() {
 		errors = new ArrayList<Error>();
 	}
 	
@@ -19,10 +19,21 @@ public final class ValidationError {
 	public List<Error> getErrors() {
 		return errors;
 	}
+	
+	@Override
+	public String toString() {
+		return "ErrorValidationMapper [errors=" + errors + "]";
+	}
 
 
 	private class Error {
 		
+		@Override
+		public String toString() {
+			return "Error [errorMessage=" + errorMessage + ", errorCode="
+					+ errorCode + "]";
+		}
+
 		private String errorMessage;
 		private int errorCode;
 		

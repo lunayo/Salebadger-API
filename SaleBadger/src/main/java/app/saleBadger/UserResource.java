@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -41,7 +42,8 @@ public class UserResource {
 	// The Java method will process HTTP GET requests
 	@GET
 	@Path("{username}")
-	public User getUser(@PathParam("username") String username) {
+	public User getUser(
+			@Size(min = 6, max = 20, message = "it works!") @PathParam("username") String username) {
 
 		List<String> errors = new ArrayList<String>();
 		User user = userRepository.findOne(username);

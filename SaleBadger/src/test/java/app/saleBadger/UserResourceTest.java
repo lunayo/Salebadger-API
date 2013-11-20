@@ -3,8 +3,6 @@ package app.saleBadger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.UUID;
-
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -14,7 +12,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.client.ClientResponse;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
 import org.junit.Before;
@@ -72,6 +69,56 @@ public class UserResourceTest {
 		}
 	}
 
+	private void updateUserInResourceAndAssertResponse(User user,
+			int responseCode) {
+		try {
+			Response response = target
+					.path("v1/users/" + user.getUsername())
+					.request(MediaType.APPLICATION_JSON)
+					.put(Entity.entity(user, MediaType.APPLICATION_JSON),
+							Response.class);
+
+			assertThat(response.getStatus(), is(responseCode));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new InternalServerErrorException();
+		}
+	}
+
+	private void deleteUserFromResourceAndAssertResponse(String username,
+			int responseCode) {
+		try {
+			Response response = target.path("v1/users/" + username)
+					.request(MediaType.APPLICATION_JSON).delete();
+
+			assertThat(response.getStatus(), is(responseCode));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void addUserToResourceAndCheckResponseCode() {
+		User user = new User("lunayo", "qwertyui",
+				"lun@codebadge.com", "Iskandar", "Goh");
+		addUserToResourceAndAssertResponse(user, 200);
+	}
+	
+	@Test
+	public void addUserResourceWithExistedUser() {
+		User user = new User("lunayo", "qwertyui", "lun@codebadge.com",
+				"Iskandar", "Goh");
+		addUserToResourceAndAssertResponse(user, 409);
+	}
+
+	@Test
+	public void addUserToResourceWithInvalidUsernameAndCheckResponseCode() {
+		User user = new User("dfse", "qwertyui", "123", "Iskandar", "Goh");
+		addUserToResourceAndAssertResponse(user, 400);
+	}
+
 	@Test
 	public void getUserResourceAndCheckResponseCode() {
 		getUserResourceAndAssertResponse("lunayo", 200);
@@ -88,53 +135,44 @@ public class UserResourceTest {
 	}
 
 	@Test
-	public void addUserToResourceAndCheckResponseCode() {
-		User user = new User(UUID.randomUUID().toString(), "qwertyui",
-				"lun@codebadge.com", "Iskandar", "Goh");
-		addUserToResourceAndAssertResponse(user, 200);
-	}
-
-	@Test
-	public void addUserToResourceWithInvalidPropertiesAndCheckResponseCode() {
-		User user = new User("dfse", "qwertyui", "123", "Iskandar", "Goh");
-		addUserToResourceAndAssertResponse(user, 400);
-	}
-
-	@Test
-	public void addUserResourceWithExistedUser() {
-		User user = new User("lunayo", "qwertyui", "lun@codebadge.com",
-				"Iskandar", "Goh");
-		addUserToResourceAndAssertResponse(user, 409);
-	}
-
-	// @Test
-	// public void deleteUserFromResourceAndCheckResponseCode() {
-	// try {
-	// Response response = target
-	// .path("v1/users/lunayo")
-	// .request(MediaType.APPLICATION_JSON)
-	// .delete();
-	//
-	// assertThat(response.getStatus(), is(204));
-	//
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-
-	@Test
 	public void updateUserInResourceAndCheckResponseCode() {
-		try {
-			ClientResponse response = target.path("/users/lunayo")
-					.request(MediaType.APPLICATION_JSON)
-					.get(ClientResponse.class);
-
-			assertThat(response.getStatus(), is(200));
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new InternalServerErrorException();
-		}
+		User user = new User("lunayo", "qwertyuiasdf", "lun@codebadge.com",
+				"Iskandar", "Goh");
+		updateUserInResourceAndAssertResponse(user, 200);
 	}
 
+	@Test
+	public void updateUserInResourceWithInvalidUsernameAndCheckResponseCode() {
+		User user = new User(" ", "as ", "luncodebadgecom", "asd", "Goh");
+		updateUserInResourceAndAssertResponse(user, 400);
+	}
+
+	@Test
+	public void updateUserInResourceWithNonExistedUserAndCheckResponseCode() {
+		User user = new User("lisanina", "asasdasasd", "lisa@codebadge.com",
+				"asdfffda", "Goh");
+		updateUserInResourceAndAssertResponse(user, 404);
+	}
+
+	@Test
+	public void updateUserInResourceWithInvalidEmailAndCheckResponseCode() {
+		User user = new User("lunayo", "asasdasasd", "lisacodebadgecom",
+				"asdfffda", "Goh");
+		updateUserInResourceAndAssertResponse(user, 400);
+	}
+
+	@Test
+	public void deleteUserFromResourceAndCheckResponseCode() {
+		deleteUserFromResourceAndAssertResponse("lunayo", 204);
+	}
+
+	@Test
+	public void deleteUserFromResourceWithInvalidUserAndCheckResponseCode() {
+		deleteUserFromResourceAndAssertResponse("lu", 400);
+	}
+	
+	@Test
+	public void deleteUserFromResourceWithNonExistedUserAndCheckResponseCode() {
+		deleteUserFromResourceAndAssertResponse("lunaluna", 404);
+	}
 }

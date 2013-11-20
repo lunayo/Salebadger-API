@@ -1,7 +1,5 @@
 package app.model.dao;
 
-import org.springframework.context.annotation.Bean;
-
 import app.model.User;
 
 

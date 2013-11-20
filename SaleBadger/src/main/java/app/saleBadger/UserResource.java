@@ -24,6 +24,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import app.model.User;
 import app.model.dao.UserRepository;
 import app.model.dao.config.SpringMongoConfig;
+import app.saleBadger.Validator.ErrorMessagesMapper;
 import app.saleBadger.WebException.BadRequestException;
 import app.saleBadger.WebException.ConflictException;
 import app.saleBadger.WebException.NotFoundException;
@@ -35,21 +36,23 @@ import app.saleBadger.WebException.NotFoundException;
 public class UserResource {
 
 	// TODO: update the class to suit your needs
-	ApplicationContext context = new AnnotationConfigApplicationContext(
+	private final static ApplicationContext context = new AnnotationConfigApplicationContext(
 			SpringMongoConfig.class);
-	UserRepository userRepository = context.getBean(UserRepository.class);
+	private final static UserRepository userRepository = context
+			.getBean(UserRepository.class);
 
 	// The Java method will process HTTP GET requests
 	@GET
 	@Path("{username}")
 	public User getUser(
-			@Size(min = 6, max = 20, message = "it works!") @PathParam("username") String username) {
+			@Size(min = 5, max = 20, message = "{user.wrong.username}")
+			@PathParam("username") String username) {
 
 		List<String> errors = new ArrayList<String>();
 		User user = userRepository.findOne(username);
 
 		if (user == null) {
-			errors.add(username + " " + "does not exist");
+			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
 			throw new NotFoundException(errors);
 		} else {
 			return user;
@@ -66,7 +69,7 @@ public class UserResource {
 		if (userInRepository != null) {
 			// user exists in the repository
 			// throw conflict
-			errors.add(user.getUsername() + " " + "has already been taken");
+			errors.add(ErrorMessagesMapper.getString("user.conflict.exist"));
 			throw new ConflictException(errors, uriInfo.getBaseUriBuilder()
 					.path("/users/{username}").build(user.getUsername()));
 		} else {
@@ -75,7 +78,7 @@ public class UserResource {
 				return result;
 			} else {
 				// throw bad request
-				errors.add("unknown internal errors");
+				errors.add(ErrorMessagesMapper.getString("app.unknown.error"));
 				throw new BadRequestException(errors);
 			}
 		}
@@ -83,22 +86,45 @@ public class UserResource {
 
 	@PUT
 	@Path("/{username}")
-	public void updateUser(@Valid User user) {
+	@Consumes(MediaType.APPLICATION_JSON)
+	public User updateUser(
+			@Size(min = 5, max = 20, message = "{user.wrong.username}") 
+			@PathParam("username") String username,
+			@Valid User user) {
+		
+		List<String> errors = new ArrayList<String>();
+		User userInRepository = userRepository.findOne(username);
 
+		if (userInRepository != null) {
+			User result = userRepository.save(user);
+			if (result != null) {
+				return result;
+			} else {
+				// throw bad request
+				errors.add(ErrorMessagesMapper.getString("app.unknown.error"));
+				throw new BadRequestException(errors);
+			}
+		} else {
+			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
+			throw new NotFoundException(errors);
+		}
 	}
 
 	@DELETE
 	@Path("/{username}")
-	public Response deleteUser(@PathParam("username") String username) {
+	public Response deleteUser(
+			@Size(min = 5, max = 20, message = "{user.wrong.username}") 
+			@PathParam("username") String username) {
+		
 		List<String> errors = new ArrayList<String>();
 		User user = userRepository.findOne(username);
 
 		if (user == null) {
-			errors.add(username + " " + "does not exist");
+			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
 			throw new NotFoundException(errors);
 		} else {
 			userRepository.delete(username);
-			return Response.ok().build();
+			return Response.status(Response.Status.NO_CONTENT).build();
 		}
 	}
 

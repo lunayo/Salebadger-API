@@ -21,7 +21,7 @@ import app.model.Constraints.EmailIsValid.EmailValidator;
 @Constraint(validatedBy = EmailValidator.class)
 public @interface EmailIsValid {
 
-	String message() default "Invalid email address";
+	String message() default "{user.wrong.email}";
 
 	Class<?>[] groups() default {};
 

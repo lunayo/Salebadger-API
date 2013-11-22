@@ -1,5 +1,7 @@
 package app.model;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -23,6 +25,8 @@ public class User {
 	@NotNull
 	@EmailIsValid
 	private String email;
+	private Date dateCreated;
+	private Date dateModified;
 
 	public User() {}
 
@@ -34,26 +38,41 @@ public class User {
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.dateCreated = new Date();
+		this.dateModified = new Date();
 	}
 	
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+
+	public Date getDateModified() {
+		return dateModified;
+	}
+
 	public void setUsername(String username) {
 		this.username = username;
+		this.updateDateModified();
 	}
 
 	public void setPassword(String password) {
 		this.password = password;
+		this.updateDateModified();
 	}
 
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
+		this.updateDateModified();
 	}
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+		this.updateDateModified();
 	}
 
 	public void setEmail(String email) {
 		this.email = email;
+		this.updateDateModified();
 	}
 
 	public String getUsername() {
@@ -74,6 +93,10 @@ public class User {
 
 	public String getEmail() {
 		return email;
+	}
+	
+	private void updateDateModified(){
+		this.dateModified = new Date();
 	}
 
 	@Override
@@ -135,5 +158,6 @@ public class User {
 			return false;
 		return true;
 	}
+	
 
 }

@@ -6,7 +6,7 @@ import javax.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import app.model.Constraints.EmailIsValid;
+import app.model.constraints.EmailIsValid;
 
 @Document(collection = "users")
 public class User {

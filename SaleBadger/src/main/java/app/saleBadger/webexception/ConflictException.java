@@ -1,4 +1,4 @@
-package app.saleBadger.WebException;
+package app.saleBadger.webexception;
 
 import java.net.URI;
 import java.util.List;
@@ -7,7 +7,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import app.saleBadger.Validator.ErrorValidationMapper;
+import app.saleBadger.validator.ErrorValidationMapper;
 
 public class ConflictException extends WebApplicationException {
 

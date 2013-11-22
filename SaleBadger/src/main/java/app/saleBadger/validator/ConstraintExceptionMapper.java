@@ -1,4 +1,4 @@
-package app.saleBadger.Validator;
+package app.saleBadger.validator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import app.saleBadger.WebException.BadRequestException;
+import app.saleBadger.webexception.BadRequestException;
 
 @Provider
 public class ConstraintExceptionMapper implements

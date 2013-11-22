@@ -1,4 +1,4 @@
-package app.saleBadger.Validator;
+package app.saleBadger.validator;
 
 import java.util.ArrayList;
 import java.util.List;

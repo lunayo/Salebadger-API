@@ -3,6 +3,7 @@ package app.saleBadger;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
@@ -24,10 +25,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import app.model.User;
 import app.model.dao.UserRepository;
 import app.model.dao.config.SpringMongoConfig;
-import app.saleBadger.Validator.ErrorMessagesMapper;
-import app.saleBadger.WebException.BadRequestException;
-import app.saleBadger.WebException.ConflictException;
-import app.saleBadger.WebException.NotFoundException;
+import app.saleBadger.validator.ErrorMessagesMapper;
+import app.saleBadger.webexception.BadRequestException;
+import app.saleBadger.webexception.ConflictException;
+import app.saleBadger.webexception.NotFoundException;
 
 // The users resource will be hosted at the URI path "/users"
 @Path("v1/users/")
@@ -43,11 +44,12 @@ public class UserResource {
 
 	// The Java method will process HTTP GET requests
 	@GET
+	@RolesAllowed("User")
 	@Path("{username}")
 	public User getUser(
 			@Size(min = 5, max = 20, message = "{user.wrong.username}")
 			@PathParam("username") String username) {
-
+		
 		List<String> errors = new ArrayList<String>();
 		User user = userRepository.findOne(username);
 

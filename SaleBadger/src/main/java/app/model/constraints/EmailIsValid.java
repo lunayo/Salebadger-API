@@ -1,4 +1,4 @@
-package app.model.Constraints;
+package app.model.constraints;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -14,7 +14,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
-import app.model.Constraints.EmailIsValid.EmailValidator;
+import app.model.constraints.EmailIsValid.EmailValidator;
 
 @Retention(RUNTIME)
 @Target({ FIELD, METHOD })

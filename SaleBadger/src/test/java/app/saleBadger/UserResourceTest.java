@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.client.filter.HttpBasicAuthFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
 import org.junit.Before;
@@ -55,6 +56,8 @@ public class UserResourceTest {
 
 	private void addUserToResourceAndAssertResponse(User user, int responseCode) {
 		try {
+			target.register(new HttpBasicAuthFilter(user.getUsername(), user
+					.getPassword()));
 			Response response = target
 					.path("v1/users")
 					.request(MediaType.APPLICATION_JSON)
@@ -72,6 +75,8 @@ public class UserResourceTest {
 	private void updateUserInResourceAndAssertResponse(User user,
 			int responseCode) {
 		try {
+			target.register(new HttpBasicAuthFilter(user.getUsername(), user
+					.getPassword()));
 			Response response = target
 					.path("v1/users/" + user.getUsername())
 					.request(MediaType.APPLICATION_JSON)
@@ -87,8 +92,9 @@ public class UserResourceTest {
 	}
 
 	private void deleteUserFromResourceAndAssertResponse(String username,
-			int responseCode) {
+			String password, int responseCode) {
 		try {
+			target.register(new HttpBasicAuthFilter(username, password));
 			Response response = target.path("v1/users/" + username)
 					.request(MediaType.APPLICATION_JSON).delete();
 
@@ -98,14 +104,14 @@ public class UserResourceTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void addUserToResourceAndCheckResponseCode() {
-		User user = new User("lunayo", "qwertyui",
-				"lun@codebadge.com", "Iskandar", "Goh");
+		User user = new User("lunayo", "qwertyui", "lun@codebadge.com",
+				"Iskandar", "Goh");
 		addUserToResourceAndAssertResponse(user, 200);
 	}
-	
+
 	@Test
 	public void addUserResourceWithExistedUser() {
 		User user = new User("lunayo", "qwertyui", "lun@codebadge.com",
@@ -163,16 +169,16 @@ public class UserResourceTest {
 
 	@Test
 	public void deleteUserFromResourceAndCheckResponseCode() {
-		deleteUserFromResourceAndAssertResponse("lunayo", 204);
+		deleteUserFromResourceAndAssertResponse("lunayo", "qwertyui", 204);
 	}
 
 	@Test
 	public void deleteUserFromResourceWithInvalidUserAndCheckResponseCode() {
-		deleteUserFromResourceAndAssertResponse("lu", 400);
+		deleteUserFromResourceAndAssertResponse("lu", "qwertyui", 400);
 	}
-	
+
 	@Test
 	public void deleteUserFromResourceWithNonExistedUserAndCheckResponseCode() {
-		deleteUserFromResourceAndAssertResponse("lunaluna", 404);
+		deleteUserFromResourceAndAssertResponse("lunaluna", "qwertyui", 404);
 	}
 }

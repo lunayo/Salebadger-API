@@ -3,7 +3,7 @@ package app.saleBadger;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
@@ -44,7 +44,7 @@ public class UserResource {
 
 	// The Java method will process HTTP GET requests
 	@GET
-	@RolesAllowed("User")
+	@PermitAll
 	@Path("{username}")
 	public User getUser(
 			@Size(min = 5, max = 20, message = "{user.wrong.username}")
@@ -62,6 +62,7 @@ public class UserResource {
 	}
 
 	@POST
+	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User addUser(@Valid User user, @Context UriInfo uriInfo) {
 
@@ -87,6 +88,7 @@ public class UserResource {
 	}
 
 	@PUT
+	@PermitAll
 	@Path("/{username}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User updateUser(
@@ -113,6 +115,7 @@ public class UserResource {
 	}
 
 	@DELETE
+	@PermitAll
 	@Path("/{username}")
 	public Response deleteUser(
 			@Size(min = 5, max = 20, message = "{user.wrong.username}") 

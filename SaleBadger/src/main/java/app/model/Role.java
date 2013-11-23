@@ -1,6 +1,8 @@
 package app.model;
 
-public enum Role {
-	ADMIN,
-	USER
+public class Role {
+
+	public static final String ADMIN = "admin";
+	public static final String USER = "user";
+	
 }

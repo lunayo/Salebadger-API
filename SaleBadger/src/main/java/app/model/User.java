@@ -28,11 +28,12 @@ public class User {
 	private String email;
 	private Date dateCreated;
 	private Date dateModified;
-	private Role role;
+	private String role;
+	
 	public User() {
 	}
 
-	public User(String username, String password, String email, Role role,
+	public User(String username, String password, String email, String role,
 			String firstName, String lastName) {
 		super();
 		this.username = username;
@@ -99,7 +100,7 @@ public class User {
 		return email;
 	}
 	
-	public Role getRole(){
+	public String getRole(){
 		return role;
 	}
 	

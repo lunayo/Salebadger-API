@@ -16,16 +16,24 @@ import javax.ws.rs.ext.Provider;
 
 import org.glassfish.jersey.server.internal.routing.UriRoutingContext;
 import org.glassfish.jersey.server.model.ResourceMethodInvoker;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import app.model.Role;
 import app.model.User;
+import app.model.dao.UserRepository;
+import app.model.dao.config.SpringMongoConfig;
 import app.saleBadger.validator.ErrorMessagesMapper;
 import app.saleBadger.webexception.ForbiddenException;
+import app.saleBadger.webexception.NotFoundException;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationRequestFilter implements ContainerRequestFilter {
 
+	private final ApplicationContext context = new AnnotationConfigApplicationContext(
+			SpringMongoConfig.class);
+	private final UserRepository userRepository = context
+			.getBean(UserRepository.class);
 	private static final String AUTHORIZATION_PROPERTY = "Authorization";
 
 	@Override
@@ -66,19 +74,25 @@ public class AuthenticationRequestFilter implements ContainerRequestFilter {
 			throw new ForbiddenException(errors);
 		}
 
+		String username = loginInformation[0];
+		String password = loginInformation[1];
+		User user = userRepository.findOne(username);
+		
+		if (user == null) {
+			errors.add(ErrorMessagesMapper
+					.getString("user.does.not.exist"));
+			throw new NotFoundException(errors);
+		}
+		String storedPassword = user.getPassword();
+
 		// authenticate username and password
-		if (!loginInformation[0].equals("lunayo")
-				|| !loginInformation[1].equals("qwertyui")) {
+		if (!UserAuthentication.check(password, storedPassword)) {
 			errors.add(ErrorMessagesMapper
 					.getString("authentication.wrong.user"));
 			throw new ForbiddenException(errors);
 		}
 
-		// Dummy user
-		User user = new User("lunayo", "qewrtyui", "adsfdsa",Role.ADMIN, "adsfas",
-				"asdfas");
 		requestContext.setSecurityContext(new AuthenticationSecurityContext(
 				user));
 	}
-
 }

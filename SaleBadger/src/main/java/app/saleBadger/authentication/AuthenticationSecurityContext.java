@@ -2,12 +2,16 @@ package app.saleBadger.authentication;
 
 import java.security.Principal;
 
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 
 import app.model.User;
 
 public class AuthenticationSecurityContext implements SecurityContext {
 
+	@Context
+    private UriInfo uriInfo;
 	private final User user;
 
 	public AuthenticationSecurityContext(User user) {
@@ -30,13 +34,13 @@ public class AuthenticationSecurityContext implements SecurityContext {
 	@Override
 	public boolean isUserInRole(String role) {
 		// TODO Auto-generated method stub
-		return true;
+		return role.equals(user.getRole());
 	}
 
 	@Override
 	public boolean isSecure() {
 		// TODO Auto-generated method stub
-		return false;
+		 return "https".equals(uriInfo.getRequestUri().getScheme());
 	}
 
 	@Override

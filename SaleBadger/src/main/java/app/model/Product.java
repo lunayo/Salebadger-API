@@ -15,11 +15,11 @@ public class Product {
 	
 	private String owner;
 
-	private String price;
+	private Price price;
 
 	private double[] location;
 
-	public Product(String description, String price, double[] location) {
+	public Product(String description, Price price, double[] location) {
 		this.description = description;
 		this.price = price;
 		this.location = location;
@@ -40,7 +40,7 @@ public class Product {
 
 
 
-	public String getPrice() {
+	public Price getPrice() {
 		return this.price;
 	}
 

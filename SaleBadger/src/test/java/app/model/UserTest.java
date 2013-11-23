@@ -14,7 +14,7 @@ public class UserTest {
 	
 	@Before
 	public void setUp(){
-		user = new User("userName","password","samatase@hotmail.com","Manos","Samatas");
+		user = new User("userName","password","samatase@hotmail.com",Role.USER,"Manos","Samatas");
 	}
 	@Test
 	public void newUserHasADateCreatedField() {

@@ -1,6 +1,7 @@
 package app.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.Size;
 
@@ -28,11 +29,11 @@ public class User {
 	private String email;
 	private Date dateCreated;
 	private Date dateModified;
-
+	private Role role;
 	public User() {
 	}
 
-	public User(String username, String password, String email,
+	public User(String username, String password, String email, Role role,
 			String firstName, String lastName) {
 		super();
 		this.username = username;
@@ -42,6 +43,7 @@ public class User {
 		this.lastName = lastName;
 		this.dateCreated = new Date();
 		this.dateModified = new Date();
+		this.role = role;
 	}
 
 	public Date getDateCreated() {
@@ -97,6 +99,11 @@ public class User {
 	public String getEmail() {
 		return email;
 	}
+	
+	public Role getRole(){
+		return role;
+	}
+	
 
 	private void updateDateModified() {
 		this.dateModified = new Date();

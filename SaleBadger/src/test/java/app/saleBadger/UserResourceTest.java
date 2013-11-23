@@ -20,6 +20,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import app.model.Role;
 import app.model.User;
 
 public class UserResourceTest {
@@ -123,21 +124,21 @@ public class UserResourceTest {
 
 	@Test
 	public void addUserToResourceAndCheckResponseCode() {
-		User user = new User("lunayo", "qwertyui", "lun@codebadge.com",
+		User user = new User("lunayo", "qwertyui", "lun@codebadge.com",Role.ADMIN,
 				"Iskandar", "Goh");
 		addUserToResourceAndAssertResponse(user, 200);
 	}
 
 	@Test
 	public void addUserResourceWithExistedUser() {
-		User user = new User("lunayo", "qwertyui", "lun@codebadge.com",
+		User user = new User("lunayo", "qwertyui", "lun@codebadge.com",Role.ADMIN,
 				"Iskandar", "Goh");
 		addUserToResourceAndAssertResponse(user, 409);
 	}
 
 	@Test
 	public void addUserToResourceWithInvalidUsernameAndCheckResponseCode() {
-		User user = new User("dfse", "qwertyui", "123", "Iskandar", "Goh");
+		User user = new User("dfse", "qwertyui", "123",Role.ADMIN, "Iskandar", "Goh");
 		addUserToResourceAndAssertResponse(user, 400);
 	}
 
@@ -158,27 +159,27 @@ public class UserResourceTest {
 
 	@Test
 	public void updateUserInResourceAndCheckResponseCode() {
-		User user = new User("lunayo", "qwertyuiasdf", "lun@codebadge.com",
+		User user = new User("lunayo", "qwertyuiasdf", "lun@codebadge.com",Role.ADMIN,
 				"Iskandar", "Goh");
 		updateUserInResourceAndAssertResponse(user, 200);
 	}
 
 	@Test
 	public void updateUserInResourceWithInvalidUsernameAndCheckResponseCode() {
-		User user = new User(" ", "as ", "luncodebadgecom", "asd", "Goh");
+		User user = new User(" ", "as ", "luncodebadgecom",Role.ADMIN, "asd", "Goh");
 		updateUserInResourceAndAssertResponse(user, 400);
 	}
 
 	@Test
 	public void updateUserInResourceWithNonExistedUserAndCheckResponseCode() {
-		User user = new User("lisanina", "asasdasasd", "lisa@codebadge.com",
+		User user = new User("lisanina", "asasdasasd", "lisa@codebadge.com",Role.ADMIN,
 				"asdfffda", "Goh");
 		updateUserInResourceAndAssertResponse(user, 404);
 	}
 
 	@Test
 	public void updateUserInResourceWithInvalidEmailAndCheckResponseCode() {
-		User user = new User("lunayo", "asasdasasd", "lisacodebadgecom",
+		User user = new User("lunayo", "asasdasasd", "lisacodebadgecom",Role.ADMIN,
 				"asdfffda", "Goh");
 		updateUserInResourceAndAssertResponse(user, 400);
 	}

@@ -17,6 +17,7 @@ import javax.ws.rs.ext.Provider;
 import org.glassfish.jersey.server.internal.routing.UriRoutingContext;
 import org.glassfish.jersey.server.model.ResourceMethodInvoker;
 
+import app.model.Role;
 import app.model.User;
 import app.saleBadger.validator.ErrorMessagesMapper;
 import app.saleBadger.webexception.ForbiddenException;
@@ -74,7 +75,7 @@ public class AuthenticationRequestFilter implements ContainerRequestFilter {
 		}
 
 		// Dummy user
-		User user = new User("lunayo", "qewrtyui", "adsfdsa", "adsfas",
+		User user = new User("lunayo", "qewrtyui", "adsfdsa",Role.ADMIN, "adsfas",
 				"asdfas");
 		requestContext.setSecurityContext(new AuthenticationSecurityContext(
 				user));

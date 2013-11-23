@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import app.model.Role;
 import app.model.User;
 import app.model.dao.config.SpringMongoConfig;
 import app.model.dao.UserRepository;
@@ -20,7 +21,7 @@ public class UserRepositoryInterfaceTest {
 	
     @Before
 	public void setUp() {
-		user = new User("samatase", "123123123", "Emmanouil", "Samatas",
+		user = new User("samatase", "123123123","Emmanouil",Role.ADMIN, "Samatas",
 				"samatase@hotmail.com");
 		userRepository.deleteAll();
 

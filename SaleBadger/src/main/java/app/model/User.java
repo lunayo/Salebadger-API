@@ -2,13 +2,14 @@ package app.model;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import app.model.constraints.EmailIsValid;
+import app.saleBadger.authentication.UserAuthentication;
 
 @Document(collection = "users")
 public class User {
@@ -16,32 +17,33 @@ public class User {
 	@Id
 	@Size(min = 6)
 	private String username;
-	@Size(min = 6, max = 20)
+	@Size(min = 6)
 	private String password;
-	@NotNull
+	@NotBlank
 	private String firstName;
-	@NotNull
+	@NotBlank
 	private String lastName;
-	@NotNull
+	@NotBlank
 	@EmailIsValid
 	private String email;
 	private Date dateCreated;
 	private Date dateModified;
 
-	public User() {}
+	public User() {
+	}
 
 	public User(String username, String password, String email,
 			String firstName, String lastName) {
 		super();
 		this.username = username;
-		this.password = password;
+		this.setPassword(password);
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.dateCreated = new Date();
 		this.dateModified = new Date();
 	}
-	
+
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -56,7 +58,8 @@ public class User {
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = UserAuthentication
+				.getSaltedHashPassword(password);
 		this.updateDateModified();
 	}
 
@@ -94,8 +97,8 @@ public class User {
 	public String getEmail() {
 		return email;
 	}
-	
-	private void updateDateModified(){
+
+	private void updateDateModified() {
 		this.dateModified = new Date();
 	}
 
@@ -158,6 +161,5 @@ public class User {
 			return false;
 		return true;
 	}
-	
 
 }

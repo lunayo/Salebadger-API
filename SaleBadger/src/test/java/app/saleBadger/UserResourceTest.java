@@ -24,9 +24,9 @@ import app.model.User;
 
 public class UserResourceTest {
 
-	private static final String KEYSTORE_CLIENT_FILE = "./keystore_client";
+	private static final String KEYSTORE_CLIENT_FILE = "./server/keystore_client";
 	private static final String KEYSTORE_CLIENT_PWD = "ARi=vZg4aPNy3P";
-	private static final String TRUSTSTORE_CLIENT_FILE = "./truststore_client";
+	private static final String TRUSTSTORE_CLIENT_FILE = "./server/truststore_client";
 	private static final String TRUSTSTORE_CLIENT_PWD = "ARi=vZg4aPNy3P";
 	private HttpServer server;
 	private WebTarget target;

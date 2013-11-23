@@ -39,7 +39,7 @@ public class ProductRepositoryTest {
 	public void setUp() {
 		double[] location = { 15.123212, 61.654321 };
 		
-		product = new Product("iPhone", iPhonePrice, location);
+		product = new Product("iPhone",iPhonePrice, "samatase", location);
 		productRepository.deleteAll();
 	
 	}
@@ -68,7 +68,7 @@ public class ProductRepositoryTest {
 	public void retrieveNearestProductsLimitTheResults() {
 		//add 100 random products
 		for (int i = 0; i < 100; i++ ){
-			Product productToAdd = new Product("dummy " + i,iPhonePrice , getRandomLocation());
+			Product productToAdd = new Product("dummy " + i,iPhonePrice ,"samatase", getRandomLocation());
 			productRepository.save(productToAdd);
 		}
 		int skip = 0;

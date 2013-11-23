@@ -3,7 +3,9 @@ package app.model.dao;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import org.junit.Before;
@@ -12,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.geo.Point;
 
+import app.model.Price;
 import app.model.Product;
 import app.model.dao.config.SpringMongoConfig;
 
@@ -23,6 +26,10 @@ public class ProductRepositoryTest {
 			.getBean(ProductRepository.class);
 	Product product;
 	Random random;
+	Locale englandLocale = new Locale("en", "GB");
+	Currency gbp = Currency.getInstance(englandLocale);
+	Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
+
 	final double MIN_LAT = -90;
 	final double MAX_LAT = 90;
 	final double MIN_LONG = -180;
@@ -31,7 +38,8 @@ public class ProductRepositoryTest {
 	@Before
 	public void setUp() {
 		double[] location = { 15.123212, 61.654321 };
-		product = new Product("iPhone", "5000 GBP", location);
+		
+		product = new Product("iPhone", iPhonePrice, location);
 		productRepository.deleteAll();
 	
 	}
@@ -60,7 +68,7 @@ public class ProductRepositoryTest {
 	public void retrieveNearestProductsLimitTheResults() {
 		//add 100 random products
 		for (int i = 0; i < 100; i++ ){
-			Product productToAdd = new Product("dummy " + i, "500", getRandomLocation());
+			Product productToAdd = new Product("dummy " + i,iPhonePrice , getRandomLocation());
 			productRepository.save(productToAdd);
 		}
 		int skip = 0;

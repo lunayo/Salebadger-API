@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.UriInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import app.model.Role;
 import app.model.User;
 import app.model.dao.UserRepository;
 import app.model.dao.config.SpringMongoConfig;
@@ -44,7 +46,7 @@ public class UserResource {
 
 	// The Java method will process HTTP GET requests
 	@GET
-	@PermitAll
+	@RolesAllowed({Role.ADMIN, Role.USER})
 	@Path("{username}")
 	public User getUser(
 			@Size(min = 5, max = 20, message = "{user.wrong.username}")
@@ -67,9 +69,8 @@ public class UserResource {
 	public User addUser(@Valid User user, @Context UriInfo uriInfo) {
 
 		List<String> errors = new ArrayList<String>();
-		User userInRepository = userRepository.findOne(user.getUsername());
 
-		if (userInRepository != null) {
+		if (userRepository.exists(user.getUsername())) {
 			// user exists in the repository
 			// throw conflict
 			errors.add(ErrorMessagesMapper.getString("user.conflict.exist"));
@@ -88,7 +89,7 @@ public class UserResource {
 	}
 
 	@PUT
-	@PermitAll
+	@RolesAllowed({Role.ADMIN, Role.USER})
 	@Path("/{username}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User updateUser(
@@ -97,9 +98,8 @@ public class UserResource {
 			@Valid User user) {
 		
 		List<String> errors = new ArrayList<String>();
-		User userInRepository = userRepository.findOne(username);
 
-		if (userInRepository != null) {
+		if (userRepository.exists(user.getUsername())) {
 			User result = userRepository.save(user);
 			if (result != null) {
 				return result;
@@ -115,16 +115,15 @@ public class UserResource {
 	}
 
 	@DELETE
-	@PermitAll
+	@RolesAllowed({Role.ADMIN, Role.USER})
 	@Path("/{username}")
 	public Response deleteUser(
 			@Size(min = 5, max = 20, message = "{user.wrong.username}") 
 			@PathParam("username") String username) {
 		
 		List<String> errors = new ArrayList<String>();
-		User user = userRepository.findOne(username);
 
-		if (user == null) {
+		if (!userRepository.exists(username)) {
 			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
 			throw new NotFoundException(errors);
 		} else {

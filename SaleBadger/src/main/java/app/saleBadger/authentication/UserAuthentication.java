@@ -24,11 +24,10 @@ public class UserAuthentication {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return Base64.encodeBase64(salt) + "$" + hash(password, salt);
+		return Base64.encodeBase64String(salt) + "$" + hash(password, salt);
 	}
 
-	public static boolean check(String password, String storedPassword)
-			throws Exception {
+	public static boolean check(String password, String storedPassword) {
 		String[] saltAndPassword = storedPassword.split("\\$");
 		if (saltAndPassword.length != 2) {
 			return false;

@@ -3,6 +3,7 @@ package app.saleBadger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import javax.net.ssl.SSLContext;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.SslConfigurator;
 import org.glassfish.jersey.client.filter.HttpBasicAuthFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
@@ -22,6 +24,10 @@ import app.model.User;
 
 public class UserResourceTest {
 
+	private static final String KEYSTORE_CLIENT_FILE = "./keystore_client";
+	private static final String KEYSTORE_CLIENT_PWD = "ARi=vZg4aPNy3P";
+	private static final String TRUSTSTORE_CLIENT_FILE = "./truststore_client";
+	private static final String TRUSTSTORE_CLIENT_PWD = "ARi=vZg4aPNy3P";
 	private HttpServer server;
 	private WebTarget target;
 
@@ -29,8 +35,18 @@ public class UserResourceTest {
 	public void setUp() throws Exception {
 		// start the server
 		server = Main.startServer();
+
+		SslConfigurator sslConfig = SslConfigurator.newInstance()
+				.trustStoreFile(TRUSTSTORE_CLIENT_FILE)
+				.trustStorePassword(TRUSTSTORE_CLIENT_PWD)
+				.keyStoreFile(KEYSTORE_CLIENT_FILE)
+				.keyPassword(KEYSTORE_CLIENT_PWD);
+
+		final SSLContext sslContext = sslConfig.createSSLContext();
+
 		// create the client
-		Client c = ClientBuilder.newClient().register(JacksonFeature.class);
+		Client c = ClientBuilder.newBuilder().sslContext(sslContext)
+				.register(JacksonFeature.class).build();
 
 		target = c.target(Main.BASE_URI);
 	}
@@ -43,7 +59,7 @@ public class UserResourceTest {
 	private void getUserResourceAndAssertResponse(String username,
 			int responseCode) {
 		try {
-			Response response = target.path("v1/users/" + username)
+			Response response = target.path("users/" + username)
 					.request(MediaType.APPLICATION_JSON).get(Response.class);
 
 			assertThat(response.getStatus(), is(responseCode));
@@ -59,7 +75,7 @@ public class UserResourceTest {
 			target.register(new HttpBasicAuthFilter(user.getUsername(), user
 					.getPassword()));
 			Response response = target
-					.path("v1/users")
+					.path("users")
 					.request(MediaType.APPLICATION_JSON)
 					.post(Entity.entity(user, MediaType.APPLICATION_JSON),
 							Response.class);
@@ -78,7 +94,7 @@ public class UserResourceTest {
 			target.register(new HttpBasicAuthFilter(user.getUsername(), user
 					.getPassword()));
 			Response response = target
-					.path("v1/users/" + user.getUsername())
+					.path("users/" + user.getUsername())
 					.request(MediaType.APPLICATION_JSON)
 					.put(Entity.entity(user, MediaType.APPLICATION_JSON),
 							Response.class);
@@ -95,7 +111,7 @@ public class UserResourceTest {
 			String password, int responseCode) {
 		try {
 			target.register(new HttpBasicAuthFilter(username, password));
-			Response response = target.path("v1/users/" + username)
+			Response response = target.path("users/" + username)
 					.request(MediaType.APPLICATION_JSON).delete();
 
 			assertThat(response.getStatus(), is(responseCode));

@@ -28,7 +28,7 @@ import app.model.dao.UserRepository;
 import app.model.dao.config.SpringMongoConfig;
 
 public class UserResourceTest {
-
+	User dummyUser;
 	ApplicationContext context = new AnnotationConfigApplicationContext(
 			SpringMongoConfig.class);
 	UserRepository userRepository = context.getBean(UserRepository.class);
@@ -57,6 +57,8 @@ public class UserResourceTest {
 				.register(JacksonFeature.class).build();
 
 		target = c.target(Main.BASE_URI);
+		dummyUser = new User("lunayo", "qwertyui", "lun@codebadge.com",
+				Role.ADMIN, "Iskandar", "Goh");
 	}
 
 	@After
@@ -129,22 +131,17 @@ public class UserResourceTest {
 		}
 	}
 
-	public User getDummyUser() {
-		return new User("lunayo", "qwertyui", "lun@codebadge.com", Role.ADMIN,
-				"Iskandar", "Goh");
-	}
-
 	@Test
 	public void addUserToResourceAndCheckResponseCode() {
 		userRepository.deleteAll();
-		addUserToResourceAndAssertResponse(getDummyUser(), 200);
+		addUserToResourceAndAssertResponse(dummyUser, 200);
 	}
 
 	@Test
 	public void addUserResourceWithExistedUser() {
 		userRepository.deleteAll();
-		userRepository.save(getDummyUser());
-		addUserToResourceAndAssertResponse(getDummyUser(), 409);
+		userRepository.save(dummyUser);
+		addUserToResourceAndAssertResponse(dummyUser, 409);
 	}
 
 	@Test
@@ -157,7 +154,7 @@ public class UserResourceTest {
 	@Test
 	public void getUserResourceAndCheckResponseCode() {
 		userRepository.deleteAll();
-		userRepository.save(getDummyUser());
+		userRepository.save(dummyUser);
 		getUserResourceAndAssertResponse("lunayo", 200);
 	}
 
@@ -174,8 +171,8 @@ public class UserResourceTest {
 	@Test
 	public void updateUserInResourceAndCheckResponseCode() {
 		userRepository.deleteAll();
-		userRepository.save(getDummyUser());
-		updateUserInResourceAndAssertResponse(getDummyUser(), 200);
+		userRepository.save(dummyUser);
+		updateUserInResourceAndAssertResponse(dummyUser, 200);
 	}
 
 	@Test
@@ -196,7 +193,7 @@ public class UserResourceTest {
 	@Test
 	public void updateUserInResourceWithInvalidEmailAndCheckResponseCode() {
 		userRepository.deleteAll();
-		userRepository.save(getDummyUser());
+		userRepository.save(dummyUser);
 		User user = new User("lunayo", "asasdasasd", "lisacodebadgecom",
 				Role.ADMIN, "asdfffda", "Goh");
 		updateUserInResourceAndAssertResponse(user, 400);
@@ -205,9 +202,9 @@ public class UserResourceTest {
 	@Test
 	public void deleteUserFromResourceAndCheckResponseCode() {
 		userRepository.deleteAll();
-		userRepository.save(getDummyUser());
-		deleteUserFromResourceAndAssertResponse(getDummyUser().getUsername(),
-				getDummyUser().getPassword(), 204);
+		userRepository.save(dummyUser);
+		deleteUserFromResourceAndAssertResponse(dummyUser.getUsername(),
+				dummyUser.getPassword(), 204);
 	}
 
 	@Test

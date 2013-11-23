@@ -19,12 +19,19 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import app.model.Role;
 import app.model.User;
+import app.model.dao.UserRepository;
+import app.model.dao.config.SpringMongoConfig;
 
 public class UserResourceTest {
 
+	ApplicationContext context = new AnnotationConfigApplicationContext(
+			SpringMongoConfig.class);
+	UserRepository userRepository = context.getBean(UserRepository.class);
 	private static final String KEYSTORE_CLIENT_FILE = "./server/keystore_client";
 	private static final String KEYSTORE_CLIENT_PWD = "ARi=vZg4aPNy3P";
 	private static final String TRUSTSTORE_CLIENT_FILE = "./server/truststore_client";
@@ -122,28 +129,35 @@ public class UserResourceTest {
 		}
 	}
 
+	public User getDummyUser() {
+		return new User("lunayo", "qwertyui", "lun@codebadge.com", Role.ADMIN,
+				"Iskandar", "Goh");
+	}
+
 	@Test
 	public void addUserToResourceAndCheckResponseCode() {
-		User user = new User("lunayo", "qwertyui", "lun@codebadge.com",Role.ADMIN,
-				"Iskandar", "Goh");
-		addUserToResourceAndAssertResponse(user, 200);
+		userRepository.deleteAll();
+		addUserToResourceAndAssertResponse(getDummyUser(), 200);
 	}
 
 	@Test
 	public void addUserResourceWithExistedUser() {
-		User user = new User("lunayo", "qwertyui", "lun@codebadge.com",Role.ADMIN,
-				"Iskandar", "Goh");
-		addUserToResourceAndAssertResponse(user, 409);
+		userRepository.deleteAll();
+		userRepository.save(getDummyUser());
+		addUserToResourceAndAssertResponse(getDummyUser(), 409);
 	}
 
 	@Test
 	public void addUserToResourceWithInvalidUsernameAndCheckResponseCode() {
-		User user = new User("dfse", "qwertyui", "123",Role.ADMIN, "Iskandar", "Goh");
+		User user = new User("dfse", "qwertyui", "123", Role.ADMIN, "Iskandar",
+				"Goh");
 		addUserToResourceAndAssertResponse(user, 400);
 	}
 
 	@Test
 	public void getUserResourceAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(getDummyUser());
 		getUserResourceAndAssertResponse("lunayo", 200);
 	}
 
@@ -159,34 +173,41 @@ public class UserResourceTest {
 
 	@Test
 	public void updateUserInResourceAndCheckResponseCode() {
-		User user = new User("lunayo", "qwertyuiasdf", "lun@codebadge.com",Role.ADMIN,
-				"Iskandar", "Goh");
-		updateUserInResourceAndAssertResponse(user, 200);
+		userRepository.deleteAll();
+		userRepository.save(getDummyUser());
+		updateUserInResourceAndAssertResponse(getDummyUser(), 200);
 	}
 
 	@Test
 	public void updateUserInResourceWithInvalidUsernameAndCheckResponseCode() {
-		User user = new User(" ", "as ", "luncodebadgecom",Role.ADMIN, "asd", "Goh");
+		User user = new User(" ", "as ", "luncodebadgecom", Role.ADMIN, "asd",
+				"Goh");
 		updateUserInResourceAndAssertResponse(user, 400);
 	}
 
 	@Test
 	public void updateUserInResourceWithNonExistedUserAndCheckResponseCode() {
-		User user = new User("lisanina", "asasdasasd", "lisa@codebadge.com",Role.ADMIN,
-				"asdfffda", "Goh");
+		userRepository.deleteAll();
+		User user = new User("lisanina", "asasdasasd", "lisa@codebadge.com",
+				Role.ADMIN, "asdfffda", "Goh");
 		updateUserInResourceAndAssertResponse(user, 404);
 	}
 
 	@Test
 	public void updateUserInResourceWithInvalidEmailAndCheckResponseCode() {
-		User user = new User("lunayo", "asasdasasd", "lisacodebadgecom",Role.ADMIN,
-				"asdfffda", "Goh");
+		userRepository.deleteAll();
+		userRepository.save(getDummyUser());
+		User user = new User("lunayo", "asasdasasd", "lisacodebadgecom",
+				Role.ADMIN, "asdfffda", "Goh");
 		updateUserInResourceAndAssertResponse(user, 400);
 	}
 
 	@Test
 	public void deleteUserFromResourceAndCheckResponseCode() {
-		deleteUserFromResourceAndAssertResponse("lunayo", "qwertyui", 204);
+		userRepository.deleteAll();
+		userRepository.save(getDummyUser());
+		deleteUserFromResourceAndAssertResponse(getDummyUser().getUsername(),
+				getDummyUser().getPassword(), 204);
 	}
 
 	@Test
@@ -196,6 +217,7 @@ public class UserResourceTest {
 
 	@Test
 	public void deleteUserFromResourceWithNonExistedUserAndCheckResponseCode() {
+		userRepository.deleteAll();
 		deleteUserFromResourceAndAssertResponse("lunaluna", "qwertyui", 404);
 	}
 }

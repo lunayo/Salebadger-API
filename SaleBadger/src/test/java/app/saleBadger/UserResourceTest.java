@@ -71,6 +71,8 @@ public class UserResourceTest {
 	private void getUserResourceAndAssertResponse(String username,
 			String password, int responseCode, boolean credential) {
 		try {
+			userRepository.deleteAll();
+			userRepository.save(dummyUser);
 			if (credential)
 				target.register(new HttpBasicAuthFilter("lunayo", password));
 			Response response = target.path("users/" + username)
@@ -109,6 +111,8 @@ public class UserResourceTest {
 	private void updateUserInResourceAndAssertResponse(User user,
 			String password, int responseCode, boolean credential) {
 		try {
+			userRepository.deleteAll();
+			userRepository.save(dummyUser);
 			if (credential)
 				target.register(new HttpBasicAuthFilter("lunayo", password));
 			Response response = target
@@ -134,6 +138,8 @@ public class UserResourceTest {
 	private void deleteUserFromResourceAndAssertResponse(String username,
 			String password, int responseCode, boolean credential) {
 		try {
+			userRepository.deleteAll();
+			userRepository.save(dummyUser);
 			if (credential)
 				target.register(new HttpBasicAuthFilter("lunayo", password));
 			Response response = target.path("users/" + username)
@@ -167,6 +173,8 @@ public class UserResourceTest {
 
 	@Test
 	public void addUserToResourceWithInvalidUsernameAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(dummyUser);
 		User user = new User("dfse", "qwertyui", "123", Role.ADMIN, "Iskandar",
 				"Goh");
 		addUserToResourceAndAssertResponse(user, 400);
@@ -174,22 +182,16 @@ public class UserResourceTest {
 
 	@Test
 	public void getUserResourceAndCheckResponseCode() {
-		userRepository.deleteAll();
-		userRepository.save(dummyUser);
 		getUserResourceAndAssertResponse("lunayo", 200, true);
 	}
 
 	@Test
 	public void getUserResourceWithNoCredentialAndCheckResponseCode() {
-		userRepository.deleteAll();
-		userRepository.save(dummyUser);
 		getUserResourceAndAssertResponse("lunayo", 403, false);
 	}
 
 	@Test
 	public void getUserResourceWithInvalidCredentialAndCheckResponseCode() {
-		userRepository.deleteAll();
-		userRepository.save(dummyUser);
 		getUserResourceAndAssertResponse("lunayo", "random", 403, true);
 	}
 
@@ -205,8 +207,6 @@ public class UserResourceTest {
 
 	@Test
 	public void updateUserInResourceAndCheckResponseCode() {
-		userRepository.deleteAll();
-		userRepository.save(dummyUser);
 		updateUserInResourceAndAssertResponse(dummyUser, 200, true);
 	}
 
@@ -219,7 +219,6 @@ public class UserResourceTest {
 
 	@Test
 	public void updateUserInResourceWithNonExistedUserAndCheckResponseCode() {
-		userRepository.deleteAll();
 		User user = new User("lisanina", "asasdasasd", "lisa@codebadge.com",
 				Role.ADMIN, "asdfffda", "Goh");
 		updateUserInResourceAndAssertResponse(user, 404, true);
@@ -227,8 +226,6 @@ public class UserResourceTest {
 
 	@Test
 	public void updateUserInResourceWithInvalidEmailAndCheckResponseCode() {
-		userRepository.deleteAll();
-		userRepository.save(dummyUser);
 		User user = new User("lunayo", "asasdasasd", "lisacodebadgecom",
 				Role.ADMIN, "asdfffda", "Goh");
 		updateUserInResourceAndAssertResponse(user, 400, true);
@@ -236,23 +233,17 @@ public class UserResourceTest {
 
 	@Test
 	public void updateUserInResourceWithInvalidCredentialAndCheckResponseCode() {
-		userRepository.deleteAll();
-		userRepository.save(dummyUser);
 		updateUserInResourceAndAssertResponse(dummyUser, "random", 403, true);
 	}
 
 	@Test
 	public void deleteUserFromResourceAndCheckResponseCode() {
-		userRepository.deleteAll();
-		userRepository.save(dummyUser);
 		deleteUserFromResourceAndAssertResponse(dummyUser.getUsername(), 204,
 				true);
 	}
 
 	@Test
 	public void deleteUserFromResourceWithInvalidCredentialAndCheckResponseCode() {
-		userRepository.deleteAll();
-		userRepository.save(dummyUser);
 		deleteUserFromResourceAndAssertResponse(dummyUser.getUsername(),
 				"random", 403, true);
 	}
@@ -264,7 +255,6 @@ public class UserResourceTest {
 
 	@Test
 	public void deleteUserFromResourceWithNonExistedUserAndCheckResponseCode() {
-		userRepository.deleteAll();
 		deleteUserFromResourceAndAssertResponse("lunaluna", 404, true);
 	}
 

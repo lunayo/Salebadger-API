@@ -24,23 +24,28 @@ public class UserAuthentication {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return Base64.encodeBase64String(salt) + "$" + hash(password, salt);
+		String hashedPassword = hash(password, salt);
+		if (hashedPassword == null || hashedPassword.length() == 0)
+			return null;
+		return Base64.encodeBase64String(salt) + "$" + hashedPassword;
 	}
 
 	public static boolean check(String password, String storedPassword) {
-		String[] saltAndPassword = storedPassword.split("\\$");
-		if (saltAndPassword.length != 2) {
+		if (storedPassword == null || storedPassword.length() == 0)
 			return false;
-		}
+		
+		String[] saltAndPassword = storedPassword.split("\\$");
+		if (saltAndPassword.length != 2) 
+			return false;
+		
 		String inputHashedPassword = hash(password,
 				Base64.decodeBase64(saltAndPassword[0]));
 		return inputHashedPassword.equals(saltAndPassword[1]);
 	}
 
 	private static String hash(String password, byte[] salt) {
-		if (password == null || password.length() == 0) {
+		if (password == null || password.length() == 0)
 			return null;
-		}
 
 		SecretKey key = null;
 		try {

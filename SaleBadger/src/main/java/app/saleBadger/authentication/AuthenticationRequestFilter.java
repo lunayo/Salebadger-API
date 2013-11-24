@@ -34,7 +34,7 @@ public class AuthenticationRequestFilter implements ContainerRequestFilter {
 			SpringMongoConfig.class);
 	private final UserRepository userRepository = context
 			.getBean(UserRepository.class);
-	private static final String AUTHORIZATION_PROPERTY = "Authorization";
+	public static final String AUTHORIZATION_PROPERTY = "Authorization";
 
 	@Override
 	public void filter(ContainerRequestContext requestContext)

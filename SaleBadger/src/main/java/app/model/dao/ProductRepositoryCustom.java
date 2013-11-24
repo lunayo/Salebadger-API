@@ -8,5 +8,6 @@ import app.model.Product;
 
 public interface ProductRepositoryCustom {
 	List<Product> findNearby(Point point, int skip, int limit);
+	List<Product> findByUsername(String username);
 
 }

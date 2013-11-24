@@ -2,6 +2,7 @@ package app.model.dao;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
 
 import java.util.Currency;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.data.mongodb.core.geo.Point;
 
 import app.model.Price;
 import app.model.Product;
+import app.model.User;
 import app.model.dao.config.SpringMongoConfig;
 
 public class ProductRepositoryTest {
@@ -29,6 +31,8 @@ public class ProductRepositoryTest {
 	Locale englandLocale = new Locale("en", "GB");
 	Currency gbp = Currency.getInstance(englandLocale);
 	Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
+	User mockUser;
+	
 
 	final double MIN_LAT = -90;
 	final double MAX_LAT = 90;
@@ -41,6 +45,10 @@ public class ProductRepositoryTest {
 		
 		product = new Product("iPhone",iPhonePrice, "samatase", location);
 		productRepository.deleteAll();
+		
+		mockUser = mock(User.class);
+		when(mockUser.getUsername()).thenReturn("samatase");
+		
 	
 	}
 
@@ -77,7 +85,22 @@ public class ProductRepositoryTest {
 		List<Product> nearestProducts = productRepository.findNearby(point, skip, limit);
 		assertThat(nearestProducts.size(), is(limit));
 	}
-
+	
+	@Test
+	public void addManyProductsQueryByUserName(){
+		for (int i = 0; i < 10; i++ ){
+			Product productToAdd = new Product("dummy " + i,iPhonePrice ,mockUser.getUsername(), getRandomLocation());
+			productRepository.save(productToAdd);
+		}
+		for (int i = 0; i < 20; i++ ){
+			Product productToAdd = new Product("other " + i,iPhonePrice ,"thisIsCrap", getRandomLocation());
+			productRepository.save(productToAdd);
+		}
+		
+		List<Product> products = productRepository.findByUsername(mockUser.getUsername());
+		assertThat(products.size(), is(10));
+		
+	}
 	private double[] getRandomLocation() {
 		Random random = new Random();
 

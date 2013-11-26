@@ -35,10 +35,7 @@ public class UserResourceTest {
 			SpringMongoConfig.class);
 	private final UserRepository userRepository = context
 			.getBean(UserRepository.class);
-	private static final String KEYSTORE_CLIENT_FILE = "./server/keystore_client";
-	private static final String KEYSTORE_CLIENT_PWD = "ARi=vZg4aPNy3P";
-	private static final String TRUSTSTORE_CLIENT_FILE = "./server/truststore_client";
-	private static final String TRUSTSTORE_CLIENT_PWD = "ARi=vZg4aPNy3P";
+	
 	private HttpServer server;
 	private WebTarget target;
 
@@ -48,10 +45,10 @@ public class UserResourceTest {
 		server = Main.startServer();
 
 		SslConfigurator sslConfig = SslConfigurator.newInstance()
-				.trustStoreFile(TRUSTSTORE_CLIENT_FILE)
-				.trustStorePassword(TRUSTSTORE_CLIENT_PWD)
-				.keyStoreFile(KEYSTORE_CLIENT_FILE)
-				.keyPassword(KEYSTORE_CLIENT_PWD);
+				.trustStoreFile(Main.TRUSTSTORE_CLIENT_FILE)
+				.trustStorePassword(Main.TRUSTSTORE_CLIENT_PWD)
+				.keyStoreFile(Main.KEYSTORE_CLIENT_FILE)
+				.keyPassword(Main.KEYSTORE_CLIENT_PWD);
 
 		final SSLContext sslContext = sslConfig.createSSLContext();
 

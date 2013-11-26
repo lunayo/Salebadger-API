@@ -36,6 +36,7 @@ import app.saleBadger.webexception.NotFoundException;
 @Path("users/")
 // The Java method will produce content identified by the MIME Media
 @Produces(MediaType.APPLICATION_JSON)
+@RolesAllowed({Role.ADMIN, Role.USER})
 public class UserResource {
 
 	// TODO: update the class to suit your needs
@@ -46,7 +47,6 @@ public class UserResource {
 
 	// The Java method will process HTTP GET requests
 	@GET
-	@RolesAllowed({Role.ADMIN, Role.USER})
 	@Path("{username}")
 	public User getUser(
 			@Size(min = 5, max = 20, message = "{user.wrong.username}")
@@ -73,7 +73,7 @@ public class UserResource {
 		if (userRepository.exists(user.getUsername())) {
 			// user exists in the repository
 			// throw conflict
-			errors.add(ErrorMessagesMapper.getString("user.conflict.exist"));
+			errors.add(ErrorMessagesMapper.getString("user.does.exist"));
 			throw new ConflictException(errors, uriInfo.getBaseUriBuilder()
 					.path("/users/{username}").build(user.getUsername()));
 		} else {
@@ -89,7 +89,6 @@ public class UserResource {
 	}
 
 	@PUT
-	@RolesAllowed({Role.ADMIN, Role.USER})
 	@Path("/{username}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User updateUser(
@@ -115,7 +114,6 @@ public class UserResource {
 	}
 
 	@DELETE
-	@RolesAllowed({Role.ADMIN, Role.USER})
 	@Path("/{username}")
 	public Response deleteUser(
 			@Size(min = 5, max = 20, message = "{user.wrong.username}") 

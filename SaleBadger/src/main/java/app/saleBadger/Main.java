@@ -23,6 +23,10 @@ public class Main {
 	private static final String TRUSTSTORE_SERVER_FILE = "./server/truststore_server";
 	private static final String TRUSTSTORE_SERVER_PWD = "ARi=vZg4aPNy3P";
 	private static final String APP_PACKAGES_NAME = "app.saleBadger";
+	public static final String KEYSTORE_CLIENT_FILE = "./server/keystore_client";
+	public static final String KEYSTORE_CLIENT_PWD = "ARi=vZg4aPNy3P";
+	public static final String TRUSTSTORE_CLIENT_FILE = "./server/truststore_client";
+	public static final String TRUSTSTORE_CLIENT_PWD = "ARi=vZg4aPNy3P";
 
 	/**
 	 * Starts Grizzly HTTP server exposing JAX-RS resources defined in this

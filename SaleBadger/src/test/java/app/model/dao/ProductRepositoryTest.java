@@ -43,7 +43,7 @@ public class ProductRepositoryTest {
 	public void setUp() {
 		double[] location = { 15.123212, 61.654321 };
 		
-		product = new Product("iPhone",iPhonePrice, "samatase", location);
+		product = new Product("iPhone", "Description", iPhonePrice, "samatase", location);
 		productRepository.deleteAll();
 		
 		mockUser = mock(User.class);
@@ -76,7 +76,7 @@ public class ProductRepositoryTest {
 	public void retrieveNearestProductsLimitTheResults() {
 		//add 100 random products
 		for (int i = 0; i < 100; i++ ){
-			Product productToAdd = new Product("dummy " + i,iPhonePrice ,"samatase", getRandomLocation());
+			Product productToAdd = new Product("dummy " + i, "Description", iPhonePrice ,"samatase", getRandomLocation());
 			productRepository.save(productToAdd);
 		}
 		int skip = 0;
@@ -89,11 +89,11 @@ public class ProductRepositoryTest {
 	@Test
 	public void addManyProductsQueryByUserName(){
 		for (int i = 0; i < 10; i++ ){
-			Product productToAdd = new Product("dummy " + i,iPhonePrice ,mockUser.getUsername(), getRandomLocation());
+			Product productToAdd = new Product("dummy " + i, "Description", iPhonePrice ,mockUser.getUsername(), getRandomLocation());
 			productRepository.save(productToAdd);
 		}
 		for (int i = 0; i < 20; i++ ){
-			Product productToAdd = new Product("other " + i,iPhonePrice ,"thisIsCrap", getRandomLocation());
+			Product productToAdd = new Product("other " + i, "Description", iPhonePrice ,"thisIsCrap", getRandomLocation());
 			productRepository.save(productToAdd);
 		}
 		

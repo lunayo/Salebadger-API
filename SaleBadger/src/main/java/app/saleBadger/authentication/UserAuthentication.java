@@ -17,17 +17,17 @@ public class UserAuthentication {
 	private static final int desiredKeyLen = 256;
 
 	public static String getSaltedHashPassword(String password) {
-		byte[] salt = null;
 		try {
-			salt = SecureRandom.getInstance("SHA1PRNG").generateSeed(saltLen);
+			byte[] salt = SecureRandom.getInstance("SHA1PRNG").generateSeed(saltLen);
+			String hashedPassword = hash(password, salt);
+			if (hashedPassword == null || hashedPassword.length() == 0)
+				return null;
+			return Base64.encodeBase64String(salt) + "$" + hashedPassword;
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String hashedPassword = hash(password, salt);
-		if (hashedPassword == null || hashedPassword.length() == 0)
-			return null;
-		return Base64.encodeBase64String(salt) + "$" + hashedPassword;
+		return null;
 	}
 
 	public static boolean check(String password, String storedPassword) {
@@ -53,6 +53,7 @@ public class UserAuthentication {
 					.getInstance("PBKDF2WithHmacSHA1");
 			key = keyFactory.generateSecret(new PBEKeySpec(password
 					.toCharArray(), salt, iterations, desiredKeyLen));
+			return Base64.encodeBase64String(key.getEncoded());
 
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
@@ -61,7 +62,6 @@ public class UserAuthentication {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		return Base64.encodeBase64String(key.getEncoded());
+		return null;
 	}
 }

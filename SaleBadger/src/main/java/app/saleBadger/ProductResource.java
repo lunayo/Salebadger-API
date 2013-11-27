@@ -5,14 +5,20 @@ import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.bson.types.ObjectId;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -23,6 +29,7 @@ import app.model.dao.config.SpringMongoConfig;
 import app.saleBadger.validator.ErrorMessagesMapper;
 import app.saleBadger.webexception.BadRequestException;
 import app.saleBadger.webexception.ConflictException;
+import app.saleBadger.webexception.NotFoundException;
 
 @Path("products/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -38,7 +45,6 @@ public class ProductResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Product addProduct(@Valid Product product, @Context UriInfo uriInfo) {
-
 		List<String> errors = new ArrayList<String>();
 
 		if (productRepository.exists(product.getId().toString())) {
@@ -59,5 +65,42 @@ public class ProductResource {
 			}
 		}
 
+	}
+
+	@PUT
+	@Path("/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Product updateProduct(@NotNull @PathParam("id") String id,
+			@Valid Product product) {
+
+		List<String> errors = new ArrayList<String>();
+
+		if (productRepository.exists(product.getId().toString())) {
+			Product result = productRepository.save(product);
+			if (result != null) {
+				return result;
+			} else {
+				// throw bad request
+				errors.add(ErrorMessagesMapper.getString("app.unknown.error"));
+				throw new BadRequestException(errors);
+			}
+		} else {
+			errors.add(ErrorMessagesMapper.getString("product.does.not.exist"));
+			throw new NotFoundException(errors);
+		}
+	}
+
+	@DELETE
+	@Path("/{id}")
+	public Response deleteUser(@NotNull @PathParam("id") ObjectId id) {
+		List<String> errors = new ArrayList<String>();
+
+		if (!productRepository.exists(id.toString())) {
+			errors.add(ErrorMessagesMapper.getString("product.does.not.exist"));
+			throw new NotFoundException(errors);
+		} else {
+			productRepository.delete(id.toString());
+			return Response.status(Response.Status.NO_CONTENT).build();
+		}
 	}
 }

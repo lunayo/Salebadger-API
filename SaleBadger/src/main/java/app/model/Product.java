@@ -3,24 +3,33 @@ package app.model;
 import java.util.Arrays;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import app.model.serializer.ObjectIdSerializer;
 
 @Document(collection = "products")
 public class Product {
 
 	@Id 
+	@NotNull
+	@JsonSerialize(using = ObjectIdSerializer.class)
 	private ObjectId id;
-
+	@Size(min = 5)
 	private String name;
-	
+	@NotEmpty
 	private String description;
-
+	@NotEmpty
 	private String ownerId;
-
+	@NotNull
 	private Price price;
-
+	@NotNull
 	private double[] location;
 
 	private Date dateCreated;

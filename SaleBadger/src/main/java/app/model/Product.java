@@ -6,7 +6,6 @@ import java.util.Date;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.ws.rs.PathParam;
 
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -21,15 +20,12 @@ import app.model.serializer.ObjectIdSerializer;
 public class Product {
 
 	@Id 
-	@NotNull
 	@JsonSerialize(using = ObjectIdSerializer.class)
 	private ObjectId id;
 	@Size(min = 5)
 	private String name;
 	@NotEmpty
 	private String description;
-	@Size(min = 5)
-	@PathParam("username")
 	private String ownerId;
 	@NotNull
 	@Valid
@@ -55,6 +51,11 @@ public class Product {
 		this.ownerId = ownerId;
 		dateCreated = new Date();
 
+	}
+	
+
+	public void setId(ObjectId id) {
+		this.id = id;
 	}
 
 	public ObjectId getId() {

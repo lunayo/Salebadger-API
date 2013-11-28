@@ -15,7 +15,6 @@ import app.saleBadger.authentication.UserAuthentication;
 public class User {
 
 	@Id
-	@Size(min = 6, max = 20)
 	private String username;
 	@Size(min = 6)
 	private String password;

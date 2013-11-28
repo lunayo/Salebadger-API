@@ -51,7 +51,6 @@ public class UserResource {
 	public User getUser(
 			@Size(min = 5, max = 20, message = "{user.wrong.username}")
 			@PathParam("username") String username) {
-		
 		List<String> errors = new ArrayList<String>();
 		User user = userRepository.findOne(username);
 
@@ -67,7 +66,6 @@ public class UserResource {
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User addUser(@Valid User user, @Context UriInfo uriInfo) {
-
 		List<String> errors = new ArrayList<String>();
 
 		if (userRepository.exists(user.getUsername())) {
@@ -95,10 +93,11 @@ public class UserResource {
 			@Size(min = 5, max = 20, message = "{user.wrong.username}") 
 			@PathParam("username") String username,
 			@Valid User user) {
-		
 		List<String> errors = new ArrayList<String>();
-
-		if (userRepository.exists(user.getUsername())) {
+		
+		user.setUsername(username);
+		
+		if (userRepository.exists(username)) {
 			User result = userRepository.save(user);
 			if (result != null) {
 				return result;

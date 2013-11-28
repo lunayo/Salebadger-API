@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
@@ -43,20 +44,26 @@ public class ProductResource {
 			.getBean(ProductRepository.class);
 	private final UserRepository userRepository = context
 			.getBean(UserRepository.class);
+	@Size(min = 5, max = 20, message = "{user.wrong.username}")
 	@PathParam("username")
 	private String username;
+	
+	private void validateUser(List<String> errors, String username) {
+		if (!userRepository.exists(username)) {
+			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
+			throw new NotFoundException(errors);
+		}
+	}
 
 	// The Java method will process HTTP GET requests
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Product addProduct(@Valid Product product, @Context UriInfo uriInfo) {
 		List<String> errors = new ArrayList<String>();
+		
+		validateUser(errors, username);
 
-		if (!userRepository.exists(username)
-				|| !userRepository.exists(product.getOwnerId())) {
-			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
-			throw new NotFoundException(errors);
-		}
+		product.setOwnerId(username);
 
 		if (productRepository.exists(product.getId().toString())) {
 			// product exists in the repository
@@ -81,18 +88,16 @@ public class ProductResource {
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Product updateProduct(@NotNull @PathParam("id") String id,
+	public Product updateProduct(@NotNull @PathParam("id") ObjectId id,
 			@Valid Product product) {
-
 		List<String> errors = new ArrayList<String>();
 
-		if (!userRepository.exists(username)
-				|| !userRepository.exists(product.getOwnerId())) {
-			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
-			throw new NotFoundException(errors);
-		}
+		validateUser(errors, username);
+		
+		product.setOwnerId(username);
+		product.setId(id);
 
-		if (productRepository.exists(product.getId().toString())) {
+		if (productRepository.exists(id.toString())) {
 			Product result = productRepository.save(product);
 			if (result != null) {
 				return result;
@@ -109,13 +114,10 @@ public class ProductResource {
 
 	@DELETE
 	@Path("/{id}")
-	public Response deleteUser(@NotNull @PathParam("id") ObjectId id) {
+	public Response deleteProduct(@NotNull @PathParam("id") ObjectId id) {
 		List<String> errors = new ArrayList<String>();
 		
-		if (!userRepository.exists(username)) {
-			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
-			throw new NotFoundException(errors);
-		}
+		validateUser(errors, username);
 
 		if (!productRepository.exists(id.toString())) {
 			errors.add(ErrorMessagesMapper.getString("product.does.not.exist"));

@@ -85,7 +85,7 @@ public class ProductResourceTest {
 		try {
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
 			Response response = target
-					.path("products")
+					.path("users/lunayo/products")
 					.request(MediaType.APPLICATION_JSON)
 					.post(Entity.entity(product, MediaType.APPLICATION_JSON),
 							Response.class);
@@ -102,7 +102,7 @@ public class ProductResourceTest {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
-			Response response = target.path("products/" + productId)
+			Response response = target.path("users/lunayo/products/" + productId)
 					.request(MediaType.APPLICATION_JSON).delete();
 			assertThat(response.getStatus(), is(responseCode));
 		} catch (Exception e) {
@@ -118,7 +118,7 @@ public class ProductResourceTest {
 			productRepository.save(dummyProduct);
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
 			Response response = target
-					.path("products/" + product.getId())
+					.path("users/lunayo/products/" + product.getId())
 					.request(MediaType.APPLICATION_JSON)
 					.put(Entity.entity(product, MediaType.APPLICATION_JSON),
 							Response.class);

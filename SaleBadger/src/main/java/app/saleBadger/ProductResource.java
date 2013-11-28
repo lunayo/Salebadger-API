@@ -25,13 +25,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import app.model.Product;
 import app.model.Role;
 import app.model.dao.ProductRepository;
+import app.model.dao.UserRepository;
 import app.model.dao.config.SpringMongoConfig;
 import app.saleBadger.validator.ErrorMessagesMapper;
 import app.saleBadger.webexception.BadRequestException;
 import app.saleBadger.webexception.ConflictException;
 import app.saleBadger.webexception.NotFoundException;
 
-@Path("products/")
+@Path("users/{username}/products/")
 @Produces(MediaType.APPLICATION_JSON)
 @RolesAllowed({ Role.ADMIN, Role.USER })
 public class ProductResource {
@@ -40,12 +41,22 @@ public class ProductResource {
 			SpringMongoConfig.class);
 	private final ProductRepository productRepository = context
 			.getBean(ProductRepository.class);
+	private final UserRepository userRepository = context
+			.getBean(UserRepository.class);
+	@PathParam("username")
+	private String username;
 
 	// The Java method will process HTTP GET requests
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Product addProduct(@Valid Product product, @Context UriInfo uriInfo) {
 		List<String> errors = new ArrayList<String>();
+
+		if (!userRepository.exists(username)
+				|| !userRepository.exists(product.getOwnerId())) {
+			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
+			throw new NotFoundException(errors);
+		}
 
 		if (productRepository.exists(product.getId().toString())) {
 			// product exists in the repository
@@ -75,6 +86,12 @@ public class ProductResource {
 
 		List<String> errors = new ArrayList<String>();
 
+		if (!userRepository.exists(username)
+				|| !userRepository.exists(product.getOwnerId())) {
+			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
+			throw new NotFoundException(errors);
+		}
+
 		if (productRepository.exists(product.getId().toString())) {
 			Product result = productRepository.save(product);
 			if (result != null) {
@@ -94,6 +111,11 @@ public class ProductResource {
 	@Path("/{id}")
 	public Response deleteUser(@NotNull @PathParam("id") ObjectId id) {
 		List<String> errors = new ArrayList<String>();
+		
+		if (!userRepository.exists(username)) {
+			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
+			throw new NotFoundException(errors);
+		}
 
 		if (!productRepository.exists(id.toString())) {
 			errors.add(ErrorMessagesMapper.getString("product.does.not.exist"));

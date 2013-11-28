@@ -3,8 +3,10 @@ package app.model;
 import java.util.Arrays;
 import java.util.Date;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.PathParam;
 
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -12,6 +14,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import app.model.constraints.LocationIsValid;
 import app.model.serializer.ObjectIdSerializer;
 
 @Document(collection = "products")
@@ -25,11 +28,14 @@ public class Product {
 	private String name;
 	@NotEmpty
 	private String description;
-	@NotEmpty
+	@Size(min = 5)
+	@PathParam("username")
 	private String ownerId;
 	@NotNull
+	@Valid
 	private Price price;
 	@NotNull
+	@LocationIsValid
 	private double[] location;
 
 	private Date dateCreated;

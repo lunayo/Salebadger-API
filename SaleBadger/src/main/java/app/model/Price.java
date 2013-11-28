@@ -2,12 +2,18 @@ package app.model;
 
 import java.util.Currency;
 
+import javax.validation.constraints.NotNull;
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+import app.model.constraints.CurrencyCodeIsValid;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Price {
 
+	@NotNull
 	private double amount;
+	@CurrencyCodeIsValid
 	private String currencyCode;
 	
 	public Price() {

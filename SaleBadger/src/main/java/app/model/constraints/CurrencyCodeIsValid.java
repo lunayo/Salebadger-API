@@ -6,44 +6,41 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.Currency;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
-import app.model.constraints.EmailIsValid.EmailValidator;
+import app.model.constraints.CurrencyCodeIsValid.CurrencyCodeValidator;
 
 @Retention(RUNTIME)
 @Target({ FIELD, METHOD })
-@Constraint(validatedBy = EmailValidator.class)
-public @interface EmailIsValid {
+@Constraint(validatedBy = CurrencyCodeValidator.class)
+public @interface CurrencyCodeIsValid {
 
-	String message() default "{user.wrong.email}";
+	String message() default "{product.wrong.price.currencyCode}";
 
 	Class<?>[] groups() default {};
 
 	Class<? extends Payload>[] payload() default {};
 
-	public class EmailValidator implements ConstraintValidator<EmailIsValid, String> {
+	public class CurrencyCodeValidator implements ConstraintValidator<CurrencyCodeIsValid, String> {
 
 		@Override
-		public void initialize(EmailIsValid email) {
+		public void initialize(CurrencyCodeIsValid currencyCode) {
 			// TODO Auto-generated method stub
 
 		}
 
 		@Override
-		public boolean isValid(String email, ConstraintValidatorContext arg1) {
+		public boolean isValid(String currencyCode, ConstraintValidatorContext arg1) {
 			// TODO Auto-generated method stub
-			try {
-				InternetAddress emailAddr = new InternetAddress(email);
-				emailAddr.validate();
-			} catch (AddressException ex) {
+			if (Currency.getInstance(currencyCode) == null) {
 				return false;
 			}
+			
 			return true;
 		}
 

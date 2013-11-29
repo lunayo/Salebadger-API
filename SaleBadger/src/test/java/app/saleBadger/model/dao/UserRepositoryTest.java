@@ -1,4 +1,4 @@
-package app.model.dao;
+package app.saleBadger.model.dao;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
@@ -8,10 +8,10 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import app.model.Role;
-import app.model.User;
-import app.model.dao.config.SpringMongoConfig;
-import app.model.dao.UserRepository;
+import app.saleBadger.model.Role;
+import app.saleBadger.model.User;
+import app.saleBadger.model.dao.UserRepository;
+import app.saleBadger.model.dao.config.SpringMongoConfig;
 
 public class UserRepositoryTest {
 	

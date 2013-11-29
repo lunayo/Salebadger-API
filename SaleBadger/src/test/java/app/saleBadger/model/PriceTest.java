@@ -1,9 +1,11 @@
-package app.model;
+package app.saleBadger.model;
 
 import java.util.Currency;
 import java.util.Locale;
 
 import org.junit.Test;
+
+import app.saleBadger.model.Price;
 
 public class PriceTest {
 	Locale englandLocale = new Locale("en", "GB");

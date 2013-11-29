@@ -1,4 +1,4 @@
-package app.model;
+package app.saleBadger.model;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -13,8 +13,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import app.model.constraints.LocationIsValid;
-import app.model.serializer.ObjectIdSerializer;
+import app.saleBadger.model.constraints.LocationIsValid;
+import app.saleBadger.model.serializer.ObjectIdSerializer;
 
 @Document(collection = "products")
 public class Product {

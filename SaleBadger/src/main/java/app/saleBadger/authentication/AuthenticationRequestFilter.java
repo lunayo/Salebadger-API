@@ -19,9 +19,9 @@ import org.glassfish.jersey.server.model.ResourceMethodInvoker;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import app.model.User;
-import app.model.dao.UserRepository;
-import app.model.dao.config.SpringMongoConfig;
+import app.saleBadger.model.User;
+import app.saleBadger.model.dao.UserRepository;
+import app.saleBadger.model.dao.config.SpringMongoConfig;
 import app.saleBadger.validator.ErrorMessagesMapper;
 import app.saleBadger.webexception.ForbiddenException;
 import app.saleBadger.webexception.NotFoundException;

@@ -1,4 +1,4 @@
-package app.model.constraints;
+package app.saleBadger.model.constraints;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -12,7 +12,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
-import app.model.constraints.LocationIsValid.LocationValidator;
+import app.saleBadger.model.constraints.LocationIsValid.LocationValidator;
 
 @Retention(RUNTIME)
 @Target({ FIELD, METHOD })

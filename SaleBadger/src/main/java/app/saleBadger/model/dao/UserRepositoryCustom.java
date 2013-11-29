@@ -1,6 +1,6 @@
-package app.model.dao;
+package app.saleBadger.model.dao;
 
-import app.model.User;
+import app.saleBadger.model.User;
 
 public interface UserRepositoryCustom {
 	public void print(User user);

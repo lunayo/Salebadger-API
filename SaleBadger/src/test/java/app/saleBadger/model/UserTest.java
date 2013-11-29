@@ -1,4 +1,4 @@
-package app.model;
+package app.saleBadger.model;
 
 import static org.junit.Assert.assertTrue;
 
@@ -6,6 +6,9 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import app.saleBadger.model.Role;
+import app.saleBadger.model.User;
 
 public class UserTest {
 	

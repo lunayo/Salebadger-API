@@ -1,4 +1,4 @@
-package app.model;
+package app.saleBadger.model;
 
 import java.util.Date;
 
@@ -8,8 +8,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import app.model.constraints.EmailIsValid;
 import app.saleBadger.authentication.UserAuthentication;
+import app.saleBadger.model.constraints.EmailIsValid;
 
 @Document(collection = "users")
 public class User {

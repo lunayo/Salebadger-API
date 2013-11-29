@@ -1,4 +1,4 @@
-package app.model.dao;
+package app.saleBadger.model.dao;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -15,10 +15,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.geo.Point;
 
-import app.model.Price;
-import app.model.Product;
-import app.model.User;
-import app.model.dao.config.SpringMongoConfig;
+import app.saleBadger.model.Price;
+import app.saleBadger.model.Product;
+import app.saleBadger.model.User;
+import app.saleBadger.model.dao.ProductRepository;
+import app.saleBadger.model.dao.config.SpringMongoConfig;
 
 public class ProductRepositoryTest {
 

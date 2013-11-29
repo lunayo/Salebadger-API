@@ -1,6 +1,8 @@
-package app.model.dao;
+package app.saleBadger.model.dao;
 
 import java.util.List;
+
+import javax.ws.rs.ext.Provider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -8,8 +10,9 @@ import org.springframework.data.mongodb.core.geo.Point;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-import app.model.Product;
+import app.saleBadger.model.Product;
 
+@Provider
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
 	@Autowired

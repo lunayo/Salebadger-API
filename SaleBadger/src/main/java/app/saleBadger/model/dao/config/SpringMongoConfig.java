@@ -1,4 +1,4 @@
-package app.model.dao.config;
+package app.saleBadger.model.dao.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,7 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
 @Configuration
-@EnableMongoRepositories(basePackages = "app.model.dao")
+@EnableMongoRepositories(basePackages = "app.saleBadger.model.dao")
 public class SpringMongoConfig extends AbstractMongoConfiguration{
 
 	@Override

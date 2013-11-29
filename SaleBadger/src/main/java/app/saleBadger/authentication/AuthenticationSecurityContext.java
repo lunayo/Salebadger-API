@@ -6,7 +6,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import app.model.User;
+import app.saleBadger.model.User;
 
 public class AuthenticationSecurityContext implements SecurityContext {
 

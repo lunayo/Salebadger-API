@@ -23,10 +23,10 @@ import javax.ws.rs.core.UriInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import app.model.Role;
-import app.model.User;
-import app.model.dao.UserRepository;
-import app.model.dao.config.SpringMongoConfig;
+import app.saleBadger.model.Role;
+import app.saleBadger.model.User;
+import app.saleBadger.model.dao.UserRepository;
+import app.saleBadger.model.dao.config.SpringMongoConfig;
 import app.saleBadger.validator.ErrorMessagesMapper;
 import app.saleBadger.webexception.BadRequestException;
 import app.saleBadger.webexception.ConflictException;
@@ -39,11 +39,8 @@ import app.saleBadger.webexception.NotFoundException;
 @RolesAllowed({Role.ADMIN, Role.USER})
 public class UserResource {
 
-	// TODO: update the class to suit your needs
-	private final static ApplicationContext context = new AnnotationConfigApplicationContext(
-			SpringMongoConfig.class);
-	private final static UserRepository userRepository = context
-			.getBean(UserRepository.class);
+	ApplicationContext context = new AnnotationConfigApplicationContext(SpringMongoConfig.class);
+    UserRepository userRepository = context.getBean(UserRepository.class);
 
 	// The Java method will process HTTP GET requests
 	@GET

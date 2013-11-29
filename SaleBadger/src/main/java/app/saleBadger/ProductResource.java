@@ -23,11 +23,11 @@ import org.bson.types.ObjectId;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import app.model.Product;
-import app.model.Role;
-import app.model.dao.ProductRepository;
-import app.model.dao.UserRepository;
-import app.model.dao.config.SpringMongoConfig;
+import app.saleBadger.model.Product;
+import app.saleBadger.model.Role;
+import app.saleBadger.model.dao.ProductRepository;
+import app.saleBadger.model.dao.UserRepository;
+import app.saleBadger.model.dao.config.SpringMongoConfig;
 import app.saleBadger.validator.ErrorMessagesMapper;
 import app.saleBadger.webexception.BadRequestException;
 import app.saleBadger.webexception.ConflictException;

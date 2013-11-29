@@ -1,4 +1,4 @@
-package app.model;
+package app.saleBadger.model;
 
 import java.util.Currency;
 
@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-import app.model.constraints.CurrencyCodeIsValid;
+import app.saleBadger.model.constraints.CurrencyCodeIsValid;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Price {

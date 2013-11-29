@@ -1,4 +1,4 @@
-package app.model.serializer;
+package app.saleBadger.model.serializer;
 
 import java.io.IOException;
 

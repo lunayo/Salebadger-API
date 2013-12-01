@@ -53,6 +53,19 @@ public class Product {
 
 	}
 	
+	public static double[] getLocation(String location) {
+		String[] locationString = location.split(";");
+		
+		if (locationString.length != 2) {
+			return null;
+		} 
+		
+		double[] locations = new double[2];
+		for (int i = 0; i < locationString.length; i++) {
+			locations[i] = Double.parseDouble(locationString[i]);
+		}
+		return locations;
+	}
 
 	public void setId(ObjectId id) {
 		this.id = id;

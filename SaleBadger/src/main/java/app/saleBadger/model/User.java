@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.validation.constraints.Size;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -83,6 +84,7 @@ public class User {
 		return username;
 	}
 
+	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}

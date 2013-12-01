@@ -4,10 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import app.saleBadger.model.Product;
 
-public interface ProductRepository extends CrudRepository<Product, String>, ProductRepositoryCustom{
-
-
-
-	
+public interface ProductRepository extends CrudRepository<Product, String>, ProductRepositoryCustom {
 
 }

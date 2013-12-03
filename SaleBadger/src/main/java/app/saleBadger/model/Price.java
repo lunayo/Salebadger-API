@@ -4,6 +4,7 @@ import java.util.Currency;
 
 import javax.validation.constraints.NotNull;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import app.saleBadger.model.constraints.CurrencyCodeIsValid;
@@ -41,6 +42,7 @@ public class Price {
 		return amount;
 	}
 
+	@JsonIgnore
 	public Currency getCurrency() {
 		return Currency.getInstance(currencyCode);
 	}

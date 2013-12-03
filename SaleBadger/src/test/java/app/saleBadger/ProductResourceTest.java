@@ -3,7 +3,9 @@ package app.saleBadger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import java.util.Currency;
+import java.util.List;
 import java.util.Locale;
 
 import javax.net.ssl.SSLContext;
@@ -40,7 +42,7 @@ public class ProductResourceTest {
 	private final Currency gbp = Currency.getInstance(new Locale("en", "GB"));
 	private final Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
 	private final Product dummyProduct = new Product("iPhone", "Description",
-			iPhonePrice, "lunayo", new double[] { 15.123212, 61.654321 });
+			iPhonePrice, "lunayo", Arrays.asList(15.123212, 61.654321));
 	private final User dummyUser = new User("lunayo", "qwertyui",
 			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh");
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
@@ -83,20 +85,33 @@ public class ProductResourceTest {
 	}
 
 	public void getProductResourceAndAssertResponseCode(String username,
-			ObjectId productId, double[] location, int responseCode) {
+			ObjectId productId, List<Double> location, int responseCode) {
 		try {
+			productRepository.deleteAll();
+			productRepository.save(dummyProduct);
 			Response response = null;
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
-			if (location != null) {
-				response = target.path("users/" + username + "/products")
-						.queryParam("near", location[0] + ";" + location[1])
-						.request(MediaType.APPLICATION_JSON)
-						.get(Response.class);
+			if (productId == null) {
+				// get list of products
+				if (location != null) {
+					response = target
+							.path("users/" + username + "/products")
+							.queryParam("near", location.get(0) + ";" + location.get(1))
+							.request(MediaType.APPLICATION_JSON)
+							.get(Response.class);
+				} else {
+					response = target.path("users/" + username + "/products")
+							.request(MediaType.APPLICATION_JSON)
+							.get(Response.class);
+				}
 			} else {
-				response = target.path("users/" + username + "/products")
+				// get specific product
+				response = target
+						.path("users/" + username + "/products/" + productId)
 						.request(MediaType.APPLICATION_JSON)
 						.get(Response.class);
 			}
+
 			assertThat(response.getStatus(), is(responseCode));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -104,16 +119,21 @@ public class ProductResourceTest {
 		}
 	}
 
+	public void getProductResourceAndAssertResponseCode(int responseCode) {
+		getProductResourceAndAssertResponseCode(dummyUser.getUsername(), null,
+				null, responseCode);
+	}
+
+	public void getProductResourceAndAssertResponseCode(List<Double> location,
+			int responseCode) {
+		getProductResourceAndAssertResponseCode(dummyUser.getUsername(), null,
+				location, responseCode);
+	}
+
 	public void getProductResourceAndAssertResponseCode(ObjectId productId,
 			int responseCode) {
 		getProductResourceAndAssertResponseCode(dummyUser.getUsername(),
 				productId, null, responseCode);
-	}
-
-	public void getProductResourceAndAssertResponseCode(ObjectId productId,
-			double[] location, int responseCode) {
-		getProductResourceAndAssertResponseCode(dummyUser.getUsername(),
-				productId, location, responseCode);
 	}
 
 	public void addProductToResourceAndAssertResponseCode(String username,
@@ -185,9 +205,23 @@ public class ProductResourceTest {
 	}
 
 	@Test
-	public void getNearbyProductFromResourceAndCheckResponseCode() {
-		getProductResourceAndAssertResponseCode(dummyProduct.getId(),
-				dummyProduct.getLocation(), 200);
+	public void getNearbyProductsFromResourceAndCheckResponseCode() {
+		getProductResourceAndAssertResponseCode(dummyProduct.getLocation(), 200);
+	}
+	
+	@Test
+	public void getNearbyProductsFromResourceWithInvalidLocationAndCheckResponseCode() {
+		getProductResourceAndAssertResponseCode(Arrays.asList(360.123212, 360.654321), 400);
+	}
+
+	@Test
+	public void getProductsFromResourceAndCheckResponseCode() {
+		getProductResourceAndAssertResponseCode(200);
+	}
+	
+	@Test
+	public void getProductFromResourceAndCheckResponseCode() {
+		getProductResourceAndAssertResponseCode(dummyProduct.getId(), 200);
 	}
 
 	@Test
@@ -223,7 +257,7 @@ public class ProductResourceTest {
 	@Test
 	public void updateProductInResourceWithNonExistedProductAndCheckResponseCode() {
 		Product product = new Product("iPhone 4", "Description", iPhonePrice,
-				"lunayo", new double[] { 15.123212, 61.654321 });
+				"lunayo", Arrays.asList(15.123212, 61.654321));
 		updateProductInResourceAndAssertResponseCode(product, 404);
 	}
 

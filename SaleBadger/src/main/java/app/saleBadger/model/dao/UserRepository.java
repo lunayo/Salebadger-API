@@ -1,8 +1,8 @@
 package app.saleBadger.model.dao;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import app.saleBadger.model.User;
 
-public interface UserRepository extends CrudRepository<User, String>, UserRepositoryCustom {
+public interface UserRepository extends MongoRepository<User, String>, UserRepositoryCustom {
 
 }

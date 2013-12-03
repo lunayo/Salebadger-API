@@ -2,10 +2,12 @@ package app.saleBadger.model.constraints;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.List;
 
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
@@ -15,7 +17,7 @@ import javax.validation.Payload;
 import app.saleBadger.model.constraints.LocationIsValid.LocationValidator;
 
 @Retention(RUNTIME)
-@Target({ FIELD, METHOD })
+@Target({ FIELD, METHOD, PARAMETER })
 @Constraint(validatedBy = LocationValidator.class)
 public @interface LocationIsValid {
 
@@ -31,7 +33,7 @@ public @interface LocationIsValid {
 	Class<? extends Payload>[] payload() default {};
 
 	public class LocationValidator implements
-			ConstraintValidator<LocationIsValid, double[]> {
+			ConstraintValidator<LocationIsValid, List<Double>> {
 
 		@Override
 		public void initialize(LocationIsValid location) {
@@ -40,24 +42,28 @@ public @interface LocationIsValid {
 		}
 
 		@Override
-		public boolean isValid(double[] location,
+		public boolean isValid(List<Double> location,
 				ConstraintValidatorContext context) {
 			// TODO Auto-generated method stub
-			if (location.length != 2)
+			boolean isValid = true;
+			context.disableDefaultConstraintViolation();
+			if (location.size() != 2)
 				return false;
 			// first variable is longitude, second variable is latitude
-			if (location[0] < MIN_LATITUDE || location[0] > MAX_LATITUDE) {
+			if (location.get(0) < MIN_LATITUDE || location.get(0) > MAX_LATITUDE) {
 				context.buildConstraintViolationWithTemplate(
 						"{product.wrong.location.latitude}")
 						.addConstraintViolation();
-				return false;
-			} else if (location[1] < MIN_LONGITUDE
-					|| location[1] > MAX_LONGITUDE) {
+				isValid = false;
+			} 
+			if (location.get(1) < MIN_LONGITUDE
+					|| location.get(1) > MAX_LONGITUDE) {
 				context.buildConstraintViolationWithTemplate(
 						"{product.wrong.location.longitude}")
 						.addConstraintViolation();
+				isValid = false;
 			}
-			return true;
+			return isValid;
 		}
 
 	}

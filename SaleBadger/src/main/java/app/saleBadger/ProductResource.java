@@ -2,11 +2,16 @@ package app.saleBadger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.validation.groups.Default;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -75,23 +80,27 @@ public class ProductResource {
 
 	// Query params ?near=longitude;latitude
 	@GET
-	public ProductList getNearbyProduct(@QueryParam("near") String location) {
-		List<String> errors = new ArrayList<String>();
-		List<Product> products = null;
-		if (location.length() != 0) {
+	public ProductList getProducts(@QueryParam("near") String location) {
+		List<Product> products = new ArrayList<Product>();
+		if (location == null || location.length() == 0) {
+			products = productRepository.findAll();
+		} else {
 			// parse the locations variable
-			double[] locations = Product.getLocation(location);
-			if (locations == null) {
-				errors.add(ErrorMessagesMapper
-						.getString("product.wrong.location"));
-				throw new NotFoundException(errors);
+			List<Double> locations = Product.getLocation(location);
+			// validate the value
+			Set<ConstraintViolation<Product>> constraints = Validation
+					.buildDefaultValidatorFactory()
+					.getValidator()
+					.validateValue(Product.class, "location", locations,
+							Default.class);
+			if (locations == null || locations.size() != 2
+					|| constraints.size() > 0) {
+				throw new ConstraintViolationException(constraints);
 			}
 
-			products = productRepository.findNearby(new Point(locations[0],
-					locations[1]), 0, 10);
+			products = productRepository.findNearby(new Point(locations.get(0),
+					locations.get(1)), 0, 10);
 		}
-
-		products = (List<Product>) productRepository.findAll();
 
 		return new ProductList(products);
 	}

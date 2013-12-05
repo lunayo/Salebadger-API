@@ -42,7 +42,7 @@ import app.saleBadger.webexception.BadRequestException;
 import app.saleBadger.webexception.ConflictException;
 import app.saleBadger.webexception.NotFoundException;
 
-@Path("users/{username}/products/")
+@Path("users/{username}")
 @Produces(MediaType.APPLICATION_JSON)
 @RolesAllowed({ Role.ADMIN, Role.USER })
 public class ProductResource {
@@ -59,7 +59,7 @@ public class ProductResource {
 
 	// The Java method will process HTTP GET requests
 	@GET
-	@Path("/{id}")
+	@Path("/product/{id}")
 	public Product getProduct(@NotNull @PathParam("id") ObjectId id) {
 		List<String> errors = new ArrayList<String>();
 
@@ -80,6 +80,7 @@ public class ProductResource {
 
 	// Query params ?near=longitude;latitude
 	@GET
+	@Path("/products")
 	public ProductList getProducts(@QueryParam("near") String location) {
 		List<Product> products = new ArrayList<Product>();
 		if (location == null || location.length() == 0) {
@@ -87,7 +88,7 @@ public class ProductResource {
 		} else {
 			// parse the locations variable
 			List<Double> locations = Product.getLocation(location);
-			// validate the value
+			// validate the value programmatically
 			Set<ConstraintViolation<Product>> constraints = Validation
 					.buildDefaultValidatorFactory()
 					.getValidator()
@@ -106,6 +107,7 @@ public class ProductResource {
 	}
 
 	@POST
+	@Path("/product")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Product addProduct(@Valid Product product, @Context UriInfo uriInfo) {
 		List<String> errors = new ArrayList<String>();
@@ -138,7 +140,7 @@ public class ProductResource {
 	}
 
 	@PUT
-	@Path("/{id}")
+	@Path("/product/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Product updateProduct(@NotNull @PathParam("id") ObjectId id,
 			@Valid Product product) {
@@ -168,7 +170,7 @@ public class ProductResource {
 	}
 
 	@DELETE
-	@Path("/{id}")
+	@Path("/product/{id}")
 	public Response deleteProduct(@NotNull @PathParam("id") ObjectId id) {
 		List<String> errors = new ArrayList<String>();
 

@@ -107,7 +107,7 @@ public class ProductResourceTest {
 			} else {
 				// get specific product
 				response = target
-						.path("users/" + username + "/products/" + productId)
+						.path("users/" + username + "/product/" + productId)
 						.request(MediaType.APPLICATION_JSON)
 						.get(Response.class);
 			}
@@ -141,7 +141,7 @@ public class ProductResourceTest {
 		try {
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
 			Response response = target
-					.path("users/" + username + "/products")
+					.path("users/" + username + "/product")
 					.request(MediaType.APPLICATION_JSON)
 					.post(Entity.entity(product, MediaType.APPLICATION_JSON),
 							Response.class);
@@ -165,7 +165,7 @@ public class ProductResourceTest {
 			productRepository.save(dummyProduct);
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
 			Response response = target
-					.path("users/" + username + "/products/" + productId)
+					.path("users/" + username + "/product/" + productId)
 					.request(MediaType.APPLICATION_JSON).delete();
 			assertThat(response.getStatus(), is(responseCode));
 		} catch (Exception e) {
@@ -187,7 +187,7 @@ public class ProductResourceTest {
 			productRepository.save(dummyProduct);
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
 			Response response = target
-					.path("users/" + username + "/products/" + product.getId())
+					.path("users/" + username + "/product/" + product.getId())
 					.request(MediaType.APPLICATION_JSON)
 					.put(Entity.entity(product, MediaType.APPLICATION_JSON),
 							Response.class);

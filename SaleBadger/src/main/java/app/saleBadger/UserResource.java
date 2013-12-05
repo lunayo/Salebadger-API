@@ -33,7 +33,7 @@ import app.saleBadger.webexception.ConflictException;
 import app.saleBadger.webexception.NotFoundException;
 
 // The users resource will be hosted at the URI path "/users"
-@Path("users/")
+@Path("user/")
 // The Java method will produce content identified by the MIME Media
 @Produces(MediaType.APPLICATION_JSON)
 @RolesAllowed({Role.ADMIN, Role.USER})

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Currency;
-import java.util.List;
 import java.util.Locale;
 
 import javax.net.ssl.SSLContext;
@@ -85,7 +84,7 @@ public class ProductResourceTest {
 	}
 
 	public void getProductResourceAndAssertResponseCode(String username,
-			ObjectId productId, List<Double> location, int responseCode) {
+			ObjectId productId, int responseCode) {
 		try {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
@@ -93,17 +92,9 @@ public class ProductResourceTest {
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
 			if (productId == null) {
 				// get list of products
-				if (location != null) {
-					response = target
-							.path("users/" + username + "/products")
-							.queryParam("near", location.get(0) + ";" + location.get(1))
-							.request(MediaType.APPLICATION_JSON)
-							.get(Response.class);
-				} else {
-					response = target.path("users/" + username + "/products")
-							.request(MediaType.APPLICATION_JSON)
-							.get(Response.class);
-				}
+				response = target.path("users/" + username + "/products")
+						.request(MediaType.APPLICATION_JSON)
+						.get(Response.class);
 			} else {
 				// get specific product
 				response = target
@@ -121,19 +112,13 @@ public class ProductResourceTest {
 
 	public void getProductResourceAndAssertResponseCode(int responseCode) {
 		getProductResourceAndAssertResponseCode(dummyUser.getUsername(), null,
-				null, responseCode);
-	}
-
-	public void getProductResourceAndAssertResponseCode(List<Double> location,
-			int responseCode) {
-		getProductResourceAndAssertResponseCode(dummyUser.getUsername(), null,
-				location, responseCode);
+				responseCode);
 	}
 
 	public void getProductResourceAndAssertResponseCode(ObjectId productId,
 			int responseCode) {
 		getProductResourceAndAssertResponseCode(dummyUser.getUsername(),
-				productId, null, responseCode);
+				productId, responseCode);
 	}
 
 	public void addProductToResourceAndAssertResponseCode(String username,
@@ -205,20 +190,10 @@ public class ProductResourceTest {
 	}
 
 	@Test
-	public void getNearbyProductsFromResourceAndCheckResponseCode() {
-		getProductResourceAndAssertResponseCode(dummyProduct.getLocation(), 200);
-	}
-	
-	@Test
-	public void getNearbyProductsFromResourceWithInvalidLocationAndCheckResponseCode() {
-		getProductResourceAndAssertResponseCode(Arrays.asList(360.123212, 360.654321), 400);
-	}
-
-	@Test
 	public void getProductsFromResourceAndCheckResponseCode() {
 		getProductResourceAndAssertResponseCode(200);
 	}
-	
+
 	@Test
 	public void getProductFromResourceAndCheckResponseCode() {
 		getProductResourceAndAssertResponseCode(dummyProduct.getId(), 200);

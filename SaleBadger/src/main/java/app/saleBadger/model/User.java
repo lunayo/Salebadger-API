@@ -1,11 +1,13 @@
 package app.saleBadger.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import app.saleBadger.authentication.UserAuthentication;
@@ -28,6 +30,9 @@ public class User {
 	private Date dateCreated;
 	private Date dateModified;
 	private String role;
+	
+//	@DBRef
+//	private List<Product> products;
 	
 	public User() {
 	}

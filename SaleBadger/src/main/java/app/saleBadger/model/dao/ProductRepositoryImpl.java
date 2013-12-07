@@ -30,7 +30,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
 	@Override
 	public List<Product> findByUsername(String username) {
-		return mongoTemplate.find(
+ 		return mongoTemplate.find(
 				new Query(Criteria.where("ownerId").is(username)),
 				Product.class);
 

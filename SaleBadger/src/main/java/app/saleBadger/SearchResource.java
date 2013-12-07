@@ -34,10 +34,13 @@ public class SearchResource {
 	private final ProductRepository productRepository = context
 			.getBean(ProductRepository.class);
 
+	// product search
 	// Query params ?near=longitude;latitude
 	@GET
 	@Path("products")
-	public ProductList getProducts(@QueryParam("near") String location) {
+	public ProductList getProducts(
+			@QueryParam("q") String keyword,
+			@QueryParam("near") String location) {
 		List<Product> products = new ArrayList<Product>();
 		
 		if (location == null || location.length() == 0) {

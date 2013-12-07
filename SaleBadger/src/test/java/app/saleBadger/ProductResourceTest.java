@@ -3,6 +3,7 @@ package app.saleBadger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -19,6 +20,7 @@ import org.bson.types.ObjectId;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.SslConfigurator;
 import org.glassfish.jersey.client.filter.HttpBasicAuthFilter;
+import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
 import org.junit.Before;
@@ -39,7 +41,7 @@ public class ProductResourceTest {
 	private final Currency gbp = Currency.getInstance(new Locale("en", "GB"));
 	private final Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
 	private final Product dummyProduct = new Product("iPhone", "Description",
-			iPhonePrice, "lunayo", new double[] { 15.123212, 61.654321 });
+			iPhonePrice, "lunayo", Arrays.asList(15.123212, 61.654321));
 	private final User dummyUser = new User("lunayo", "qwertyui",
 			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh");
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
@@ -66,7 +68,8 @@ public class ProductResourceTest {
 
 		// create the client
 		Client c = ClientBuilder.newBuilder().sslContext(sslContext)
-				.register(JacksonFeature.class).build();
+				.register(new LoggingFilter()).register(JacksonFeature.class)
+				.build();
 
 		target = c.target(Main.BASE_URI);
 
@@ -80,12 +83,50 @@ public class ProductResourceTest {
 		server.stop();
 	}
 
-	public void addProductToResourceAndAssertResponseCode(Product product,
+	public void getProductResourceAndAssertResponseCode(String username,
+			ObjectId productId, int responseCode) {
+		try {
+			productRepository.deleteAll();
+			productRepository.save(dummyProduct);
+			Response response = null;
+			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
+			if (productId == null) {
+				// get list of products
+				response = target.path("users/" + username + "/products")
+						.request(MediaType.APPLICATION_JSON)
+						.get(Response.class);
+			} else {
+				// get specific product
+				response = target
+						.path("users/" + username + "/product/" + productId)
+						.request(MediaType.APPLICATION_JSON)
+						.get(Response.class);
+			}
+
+			assertThat(response.getStatus(), is(responseCode));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new InternalServerErrorException();
+		}
+	}
+
+	public void getProductResourceAndAssertResponseCode(int responseCode) {
+		getProductResourceAndAssertResponseCode(dummyUser.getUsername(), null,
+				responseCode);
+	}
+
+	public void getProductResourceAndAssertResponseCode(ObjectId productId,
 			int responseCode) {
+		getProductResourceAndAssertResponseCode(dummyUser.getUsername(),
+				productId, responseCode);
+	}
+
+	public void addProductToResourceAndAssertResponseCode(String username,
+			Product product, int responseCode) {
 		try {
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
 			Response response = target
-					.path("users/lunayo/products")
+					.path("users/" + username + "/product")
 					.request(MediaType.APPLICATION_JSON)
 					.post(Entity.entity(product, MediaType.APPLICATION_JSON),
 							Response.class);
@@ -96,13 +137,20 @@ public class ProductResourceTest {
 		}
 	}
 
-	public void deleteProductFromResourceAndAssertResponseCode(
+	public void addProductToResourceAndAssertResponseCode(Product product,
+			int responseCode) {
+		addProductToResourceAndAssertResponseCode(dummyUser.getUsername(),
+				product, responseCode);
+	}
+
+	public void deleteProductFromResourceAndAssertResponseCode(String username,
 			ObjectId productId, int responseCode) {
 		try {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
-			Response response = target.path("users/lunayo/products/" + productId)
+			Response response = target
+					.path("users/" + username + "/product/" + productId)
 					.request(MediaType.APPLICATION_JSON).delete();
 			assertThat(response.getStatus(), is(responseCode));
 		} catch (Exception e) {
@@ -111,14 +159,20 @@ public class ProductResourceTest {
 		}
 	}
 
-	public void updateProductInResourceAndAssertResponseCode(Product product,
-			int responseCode) {
+	public void deleteProductFromResourceAndAssertResponseCode(
+			ObjectId productId, int responseCode) {
+		deleteProductFromResourceAndAssertResponseCode(dummyUser.getUsername(),
+				productId, responseCode);
+	}
+
+	public void updateProductInResourceAndAssertResponseCode(String username,
+			Product product, int responseCode) {
 		try {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
 			Response response = target
-					.path("users/lunayo/products/" + product.getId())
+					.path("users/" + username + "/product/" + product.getId())
 					.request(MediaType.APPLICATION_JSON)
 					.put(Entity.entity(product, MediaType.APPLICATION_JSON),
 							Response.class);
@@ -129,20 +183,68 @@ public class ProductResourceTest {
 		}
 	}
 
+	public void updateProductInResourceAndAssertResponseCode(Product product,
+			int responseCode) {
+		updateProductInResourceAndAssertResponseCode(dummyUser.getUsername(),
+				product, responseCode);
+	}
+
+	@Test
+	public void getProductsFromResourceAndCheckResponseCode() {
+		getProductResourceAndAssertResponseCode(200);
+	}
+
+	@Test
+	public void getProductFromResourceAndCheckResponseCode() {
+		getProductResourceAndAssertResponseCode(dummyProduct.getId(), 200);
+	}
+
 	@Test
 	public void addProductToResourceAndCheckResponseCode() {
 		productRepository.deleteAll();
 		addProductToResourceAndAssertResponseCode(dummyProduct, 200);
 	}
-	
+
+	@Test
+	public void addProductToResourceWithInvalidUserAndCheckResponseCode() {
+		productRepository.deleteAll();
+		addProductToResourceAndAssertResponseCode("lun", dummyProduct, 400);
+	}
+
+	@Test
+	public void addProductToResourceWithNonExistedUserAndCheckResponseCode() {
+		productRepository.deleteAll();
+		addProductToResourceAndAssertResponseCode("lunaluna", dummyProduct, 404);
+	}
+
+	@Test
+	public void addProductToResourceWithExistedProductAndCheckResponseCode() {
+		productRepository.deleteAll();
+		productRepository.save(dummyProduct);
+		addProductToResourceAndAssertResponseCode(dummyProduct, 409);
+	}
+
 	@Test
 	public void updateProductInResourceAndCheckResponseCode() {
 		updateProductInResourceAndAssertResponseCode(dummyProduct, 200);
 	}
-	
+
+	@Test
+	public void updateProductInResourceWithNonExistedProductAndCheckResponseCode() {
+		Product product = new Product("iPhone 4", "Description", iPhonePrice,
+				"lunayo", Arrays.asList(15.123212, 61.654321));
+		updateProductInResourceAndAssertResponseCode(product, 404);
+	}
+
 	@Test
 	public void deleteProductFromResourceAndCheckResponseCode() {
-		deleteProductFromResourceAndAssertResponseCode(dummyProduct.getId(), 204);
+		deleteProductFromResourceAndAssertResponseCode(dummyProduct.getId(),
+				204);
+	}
+
+	@Test
+	public void deleteProductFromResourceWithNonexistedProductAndCheckResponseCode() {
+		deleteProductFromResourceAndAssertResponseCode(new ObjectId(), 404);
 	}
 
 }

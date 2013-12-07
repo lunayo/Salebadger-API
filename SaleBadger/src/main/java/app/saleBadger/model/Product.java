@@ -1,7 +1,8 @@
 package app.saleBadger.model;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -19,7 +20,7 @@ import app.saleBadger.model.serializer.ObjectIdSerializer;
 @Document(collection = "products")
 public class Product {
 
-	@Id 
+	@Id
 	@JsonSerialize(using = ObjectIdSerializer.class)
 	private ObjectId id;
 	@Size(min = 5)
@@ -32,17 +33,18 @@ public class Product {
 	private Price price;
 	@NotNull
 	@LocationIsValid
-	private double[] location;
+	private List<Double> location;
 
 	private Date dateCreated;
 
 	private Date dateModified;
-	
+
 	public Product() {
-		
+
 	}
 
-	public Product(String name, String description, Price price, String ownerId, double[] location) {
+	public Product(String name, String description, Price price,
+			String ownerId, List<Double> location) {
 		this.id = new ObjectId();
 		this.name = name;
 		this.description = description;
@@ -52,7 +54,20 @@ public class Product {
 		dateCreated = new Date();
 
 	}
-	
+
+	public static List<Double> getLocation(String location) {
+		String[] locationString = location.split(";");
+
+		if (locationString.length != 2) {
+			return null;
+		}
+
+		List<Double>locations = new ArrayList<Double>();
+		for (int i = 0; i < locationString.length; i++) {
+			locations.add(Double.parseDouble(locationString[i]));
+		}
+		return locations;
+	}
 
 	public void setId(ObjectId id) {
 		this.id = id;
@@ -94,11 +109,11 @@ public class Product {
 		this.price = price;
 	}
 
-	public double[] getLocation() {
+	public List<Double> getLocation() {
 		return location;
 	}
 
-	public void setLocation(double[] location) {
+	public void setLocation(List<Double> location) {
 		this.location = location;
 	}
 
@@ -122,8 +137,8 @@ public class Product {
 	public String toString() {
 		return "Product [id=" + id + ", name=" + name + ", description="
 				+ description + ", ownerId=" + ownerId + ", price=" + price
-				+ ", location=" + Arrays.toString(location) + ", dateCreated="
-				+ dateCreated + ", dateModified=" + dateModified + "]";
+				+ ", location=" + location + ", dateCreated=" + dateCreated
+				+ ", dateModified=" + dateModified + "]";
 	}
 
 }

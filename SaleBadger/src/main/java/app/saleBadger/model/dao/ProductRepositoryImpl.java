@@ -1,5 +1,6 @@
 package app.saleBadger.model.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.ext.Provider;
@@ -30,9 +31,18 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
 	@Override
 	public List<Product> findByUsername(String username) {
- 		return mongoTemplate.find(
+		return mongoTemplate.find(
 				new Query(Criteria.where("ownerId").is(username)),
 				Product.class);
 
+	}
+
+	@Override
+	public List<Product> findByQuery(HashMap<String, Object> params) {
+		Query query = new Query();
+		for (String key : params.keySet()) {
+			query.addCriteria(Criteria.where(key).is(params.get(key)));
+		}
+		return mongoTemplate.find(query, Product.class);
 	}
 }

@@ -12,6 +12,7 @@ import javax.net.ssl.SSLContext;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -72,21 +73,38 @@ public class SearchResourceTest {
 		server.stop();
 	}
 
+	public void getProductResourceAndAssertResponseCode(String keyword,
+			int responseCode) {
+		getProductResourceAndAssertResponseCode(keyword, null, responseCode);
+	}
+
 	public void getProductResourceAndAssertResponseCode(List<Double> location,
 			int responseCode) {
+		getProductResourceAndAssertResponseCode(null, location, responseCode);
+	}
+
+	public void getProductResourceAndAssertResponseCode(String keyword,
+			List<Double> location, int responseCode) {
 		try {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
 			Response response = null;
+			Invocation.Builder invocationBuilder = null;
 			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
+			WebTarget resourceWebTarget = target.path("products");
+
 			if (location != null) {
-				response = target
-						.path("/products")
-						.queryParam("near",
-								location.get(0) + ";" + location.get(1))
-						.request(MediaType.APPLICATION_JSON)
-						.get(Response.class);
+				WebTarget nearParam = resourceWebTarget.queryParam("near",
+						location.get(0) + ";" + location.get(1));
+				invocationBuilder = nearParam
+						.request(MediaType.APPLICATION_JSON);
 			}
+			if (keyword != null) {
+				WebTarget qTarget = resourceWebTarget.queryParam("q", keyword);
+				invocationBuilder = qTarget.request(MediaType.APPLICATION_JSON);
+			}
+
+			response = invocationBuilder.get(Response.class);
 
 			assertThat(response.getStatus(), is(responseCode));
 		} catch (Exception e) {
@@ -104,5 +122,10 @@ public class SearchResourceTest {
 	public void getNearbyProductsFromResourceWithInvalidLocationAndCheckResponseCode() {
 		getProductResourceAndAssertResponseCode(
 				Arrays.asList(360.123212, 360.654321), 400);
+	}
+
+	@Test
+	public void getProductsFromResourceWithSearchKeywordAndCheckResponseCode() {
+		getProductResourceAndAssertResponseCode("black", 200);
 	}
 }

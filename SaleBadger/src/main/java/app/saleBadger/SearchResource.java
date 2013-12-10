@@ -1,6 +1,7 @@
 package app.saleBadger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ import app.saleBadger.model.dao.config.SpringMongoConfig;
 @Produces(MediaType.APPLICATION_JSON)
 @PermitAll
 public class SearchResource {
-	
+
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
 			SpringMongoConfig.class);
 	private final ProductRepository productRepository = context
@@ -38,14 +39,12 @@ public class SearchResource {
 	// Query params ?near=longitude;latitude
 	@GET
 	@Path("products")
-	public ProductList getProducts(
-			@QueryParam("q") String keyword,
+	public ProductList getProducts(@QueryParam("q") String keyword,
 			@QueryParam("near") String location) {
+		HashMap<String, Object> params = new HashMap<String, Object>();
 		List<Product> products = new ArrayList<Product>();
-		
-		if (location == null || location.length() == 0) {
-			products = productRepository.findAll();
-		} else {
+
+		if (location != null) {
 			// parse the locations variable
 			List<Double> locations = Product.getLocation(location);
 			// validate the value programmatically
@@ -58,12 +57,19 @@ public class SearchResource {
 					|| constraints.size() > 0) {
 				throw new ConstraintViolationException(constraints);
 			}
-
-			products = productRepository.findNearby(new Point(locations.get(0),
-					locations.get(1)), 0, 10);
+			params.put("location", new Point(locations.get(0),
+					locations.get(1)));
+		}
+		if (keyword != null) {
+			params.put("name", keyword);
 		}
 
+		if (params.size() != 0) {
+			products = productRepository.findByQuery(params);
+		} else {
+			products = productRepository.findAll();
+		}
+	
 		return new ProductList(products);
 	}
-	
 }

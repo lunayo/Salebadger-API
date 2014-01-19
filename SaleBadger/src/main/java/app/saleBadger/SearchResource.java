@@ -22,27 +22,22 @@ import org.springframework.data.mongodb.core.geo.Point;
 
 import app.saleBadger.model.Product;
 import app.saleBadger.model.ProductList;
-import app.saleBadger.model.User;
-import app.saleBadger.model.UserList;
 import app.saleBadger.model.dao.ProductRepository;
-import app.saleBadger.model.dao.UserRepository;
 import app.saleBadger.model.dao.config.SpringMongoConfig;
 
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
+@PermitAll
 public class SearchResource {
 
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
 			SpringMongoConfig.class);
 	private final ProductRepository productRepository = context
 			.getBean(ProductRepository.class);
-	private final UserRepository userRepository = context
-			.getBean(UserRepository.class);
 
 	// product search
 	// Query params ?near=longitude;latitude
 	@GET
-	@PermitAll
 	@Path("products")
 	public ProductList getProducts(@QueryParam("q") String keyword,
 			@QueryParam("near") String location) {
@@ -76,21 +71,5 @@ public class SearchResource {
 		}
 	
 		return new ProductList(products);
-	}
-	
-	// user search
-	@GET
-	@Path("users")
-	public UserList getUsers(@QueryParam("q") String keyword) {
-		HashMap<String, Object> params = new HashMap<String, Object>();
-		List<User> users = new ArrayList<User>();
-		
-		if (keyword != null) {
-			params.put("username", keyword);
-		}
-		
-		users = userRepository.findAll();
-		
-		return new UserList(users);
 	}
 }

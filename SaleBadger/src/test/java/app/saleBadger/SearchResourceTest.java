@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.SslConfigurator;
+import org.glassfish.jersey.client.filter.HttpBasicAuthFilter;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
@@ -29,12 +30,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import app.saleBadger.model.Price;
 import app.saleBadger.model.Product;
-import app.saleBadger.model.ProductList;
-import app.saleBadger.model.Role;
-import app.saleBadger.model.User;
-import app.saleBadger.model.UserList;
 import app.saleBadger.model.dao.ProductRepository;
-import app.saleBadger.model.dao.UserRepository;
 import app.saleBadger.model.dao.config.SpringMongoConfig;
 
 public class SearchResourceTest {
@@ -43,14 +39,10 @@ public class SearchResourceTest {
 	private final Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
 	private final Product dummyProduct = new Product("iPhone", "Description",
 			iPhonePrice, "lunayo", Arrays.asList(15.123212, 61.654321));
-	private final User dummyUser = new User("lunayo", "qwertyui",
-			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh");
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
 			SpringMongoConfig.class);
 	private final ProductRepository productRepository = context
 			.getBean(ProductRepository.class);
-	private final UserRepository userRepository = context
-			.getBean(UserRepository.class);
 	private HttpServer server;
 	private WebTarget target;
 
@@ -83,29 +75,22 @@ public class SearchResourceTest {
 
 	public void getProductResourceAndAssertResponseCode(String keyword,
 			int responseCode) {
-		Response response = getProductResource(keyword, null);
-		assertThat(response.getStatus(), is(responseCode));
+		getProductResourceAndAssertResponseCode(keyword, null, responseCode);
 	}
 
 	public void getProductResourceAndAssertResponseCode(List<Double> location,
 			int responseCode) {
-		Response response = getProductResource(null, location);
-		assertThat(response.getStatus(), is(responseCode));
-	}
-	
-	public void getProductResourceAndAssertProductsCount(String keyword,
-			int count) {
-		Response response = getProductResource(keyword, null);
-		ProductList products = response.readEntity(ProductList.class);
-		assertThat(products.getProducts().size(), is(count));
+		getProductResourceAndAssertResponseCode(null, location, responseCode);
 	}
 
-	public Response getProductResource(String keyword, List<Double> location) {
+	public void getProductResourceAndAssertResponseCode(String keyword,
+			List<Double> location, int responseCode) {
 		try {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
 			Response response = null;
 			Invocation.Builder invocationBuilder = null;
+			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
 			WebTarget resourceWebTarget = target.path("products");
 
 			if (location != null) {
@@ -120,51 +105,8 @@ public class SearchResourceTest {
 			}
 
 			response = invocationBuilder.get(Response.class);
-			
-			return response;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new InternalServerErrorException();
-		}
-	}
-	
-	public void getUserResourceAndAssertResponseCode(String keyword,
-			int responseCode) {
-		Response response = getUserResource(keyword, null);
-		assertThat(response.getStatus(), is(responseCode));
-	}
-	
-	public void getUserResourceAndAssertUsersCount(String keyword,
-			int count) {
-		Response response = getUserResource(keyword, null);
-		UserList users = response.readEntity(UserList.class);
-		assertThat(users.getUsers().size(), is(count));
-	}
-	
-	public Response getUserResource(String keyword, List<Double> location) {
-		try {
-			userRepository.deleteAll();
-			userRepository.save(dummyUser);
-			Response response = null;
-			Invocation.Builder invocationBuilder = null;
-			WebTarget resourceWebTarget = target.path("users");
-
-			if (location != null) {
-				WebTarget nearParam = resourceWebTarget.queryParam("near",
-						location.get(0) + ";" + location.get(1));
-				invocationBuilder = nearParam
-						.request(MediaType.APPLICATION_JSON);
-			}
-			if (keyword != null) {
-				WebTarget qTarget = resourceWebTarget.queryParam("q", keyword);
-				invocationBuilder = qTarget.request(MediaType.APPLICATION_JSON);
-			}
-
-			response = invocationBuilder.get(Response.class);
-			
-			return response;
-
+			assertThat(response.getStatus(), is(responseCode));
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new InternalServerErrorException();
@@ -185,20 +127,5 @@ public class SearchResourceTest {
 	@Test
 	public void getProductsFromResourceWithSearchKeywordAndCheckResponseCode() {
 		getProductResourceAndAssertResponseCode("black", 200);
-	}
-	
-	@Test
-	public void getProductsFromResourceWithSearchKeywordAndCheckCount() {
-		getProductResourceAndAssertProductsCount(dummyProduct.getName(), 1);
-	}
-	
-//	@Test
-//	public void getUsersFromResourceWithSearchKeywordAndCheckResponseCode() {
-//		getUserResourceAndAssertResponseCode("black", 200);
-//	}
-	
-	@Test
-	public void getUsersFromResourceWithSearchKeywordAndCheckCount() {
-		getUserResourceAndAssertUsersCount(dummyUser.getUsername(), 1);
 	}
 }

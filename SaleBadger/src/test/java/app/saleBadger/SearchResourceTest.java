@@ -92,7 +92,7 @@ public class SearchResourceTest {
 		Response response = getProductResource(null, location);
 		assertThat(response.getStatus(), is(responseCode));
 	}
-	
+
 	public void getProductResourceAndAssertProductsCount(String keyword,
 			int count) {
 		Response response = getProductResource(keyword, null);
@@ -120,7 +120,7 @@ public class SearchResourceTest {
 			}
 
 			response = invocationBuilder.get(Response.class);
-			
+
 			return response;
 
 		} catch (Exception e) {
@@ -128,20 +128,19 @@ public class SearchResourceTest {
 			throw new InternalServerErrorException();
 		}
 	}
-	
+
 	public void getUserResourceAndAssertResponseCode(String keyword,
 			int responseCode) {
 		Response response = getUserResource(keyword, null);
 		assertThat(response.getStatus(), is(responseCode));
 	}
-	
-	public void getUserResourceAndAssertUsersCount(String keyword,
-			int count) {
+
+	public void getUserResourceAndAssertUsersCount(String keyword, int count) {
 		Response response = getUserResource(keyword, null);
 		UserList users = response.readEntity(UserList.class);
 		assertThat(users.getUsers().size(), is(count));
 	}
-	
+
 	public Response getUserResource(String keyword, List<Double> location) {
 		try {
 			userRepository.deleteAll();
@@ -162,7 +161,7 @@ public class SearchResourceTest {
 			}
 
 			response = invocationBuilder.get(Response.class);
-			
+
 			return response;
 
 		} catch (Exception e) {
@@ -186,17 +185,17 @@ public class SearchResourceTest {
 	public void getProductsFromResourceWithSearchKeywordAndCheckResponseCode() {
 		getProductResourceAndAssertResponseCode("black", 200);
 	}
-	
+
 	@Test
 	public void getProductsFromResourceWithSearchKeywordAndCheckCount() {
 		getProductResourceAndAssertProductsCount(dummyProduct.getName(), 1);
 	}
-	
-//	@Test
-//	public void getUsersFromResourceWithSearchKeywordAndCheckResponseCode() {
-//		getUserResourceAndAssertResponseCode("black", 200);
-//	}
-	
+
+	// @Test
+	// public void getUsersFromResourceWithSearchKeywordAndCheckResponseCode() {
+	// getUserResourceAndAssertResponseCode("black", 200);
+	// }
+
 	@Test
 	public void getUsersFromResourceWithSearchKeywordAndCheckCount() {
 		getUserResourceAndAssertUsersCount(dummyUser.getUsername(), 1);

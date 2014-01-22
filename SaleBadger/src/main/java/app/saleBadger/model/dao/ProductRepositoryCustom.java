@@ -11,5 +11,5 @@ public interface ProductRepositoryCustom {
 	List<Product> findNearby(Point point, int skip, int limit);
 	List<Product> findByUsername(String username);
 	List<Product> findByQuery(HashMap<String, Object> params);
-
+	List<Product> findByQuery(String keyword);
 }

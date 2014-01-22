@@ -45,4 +45,12 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 		}
 		return mongoTemplate.find(query, Product.class);
 	}
+
+	@Override
+	public List<Product> findByQuery(String keyword) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("name").regex(keyword, "i")
+				.orOperator(Criteria.where("description").regex(keyword, "i")));
+		return mongoTemplate.find(query, Product.class);
+	}
 }

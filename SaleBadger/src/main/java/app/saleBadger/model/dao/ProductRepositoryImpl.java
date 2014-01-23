@@ -47,10 +47,18 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 	}
 
 	@Override
-	public List<Product> findByQuery(String keyword) {
+	public List<Product> findByQuery(String keyword, Point location, int skip,
+			int limit) {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("name").regex(keyword, "i")
-				.orOperator(Criteria.where("description").regex(keyword, "i")));
+		if (keyword != null && !keyword.isEmpty()) {
+			query.addCriteria(new Criteria().orOperator(
+					Criteria.where("description").regex(keyword, "i"), Criteria
+							.where("name").regex(keyword, "i")));
+		}
+		if (location != null) {
+			query.addCriteria(Criteria.where("location").nearSphere(location));
+		}
+		query.skip(skip).limit(limit);
 		return mongoTemplate.find(query, Product.class);
 	}
 }

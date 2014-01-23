@@ -5,7 +5,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +41,7 @@ public class ProductRepositoryTest {
 
 	@Before
 	public void setUp() {
-		List<Double> location = Arrays.asList(15.123212, 61.654321);
+		Point location = new Point(15.123212, 61.654321);
 
 		product = new Product("iPhone", "Description", iPhonePrice, "samatase",
 				location);
@@ -108,13 +107,13 @@ public class ProductRepositoryTest {
 
 	}
 
-	private List<Double> getRandomLocation() {
+	private Point getRandomLocation() {
 		Random random = new Random();
 
 		double randomLat = MIN_LAT + (MAX_LAT - MIN_LAT) * random.nextDouble();
 		double randomLong = MIN_LONG + (MAX_LONG - MIN_LONG)
 				* random.nextDouble();
-		List<Double> randomLocation = Arrays.asList(randomLong, randomLat);
+		Point randomLocation = new Point(randomLong, randomLat);
 		return randomLocation;
 	}
 

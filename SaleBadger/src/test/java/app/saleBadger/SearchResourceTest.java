@@ -3,7 +3,6 @@ package app.saleBadger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +18,7 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.SslConfigurator;
+import org.glassfish.jersey.client.filter.HttpBasicAuthFilter;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.data.mongodb.core.geo.Point;
 
 import app.saleBadger.model.Price;
 import app.saleBadger.model.Product;
@@ -42,7 +43,7 @@ public class SearchResourceTest {
 	private final Currency gbp = Currency.getInstance(new Locale("en", "GB"));
 	private final Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
 	private final Product dummyProduct = new Product("iPhone", "Description",
-			iPhonePrice, "lunayo", Arrays.asList(15.123212, 61.654321));
+			iPhonePrice, "lunayo", new Point(15.123212, 61.654321));
 	private final User dummyUser = new User("lunayo", "qwertyui",
 			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh");
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
@@ -87,7 +88,7 @@ public class SearchResourceTest {
 		assertThat(response.getStatus(), is(responseCode));
 	}
 
-	public void getProductResourceAndAssertResponseCode(List<Double> location,
+	public void getProductResourceAndAssertResponseCode(Point location,
 			int responseCode) {
 		Response response = getProductResource(null, location);
 		assertThat(response.getStatus(), is(responseCode));
@@ -100,7 +101,7 @@ public class SearchResourceTest {
 		assertThat(products.getProducts().size(), is(count));
 	}
 
-	public Response getProductResource(String keyword, List<Double> location) {
+	public Response getProductResource(String keyword, Point location) {
 		try {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
@@ -110,7 +111,7 @@ public class SearchResourceTest {
 
 			if (location != null) {
 				WebTarget nearParam = resourceWebTarget.queryParam("near",
-						location.get(0) + ";" + location.get(1));
+						location.getX() + ";" + location.getY());
 				invocationBuilder = nearParam
 						.request(MediaType.APPLICATION_JSON);
 			}
@@ -131,23 +132,26 @@ public class SearchResourceTest {
 
 	public void getUserResourceAndAssertResponseCode(String keyword,
 			int responseCode) {
-		Response response = getUserResource(keyword, null);
+		Response response = getUserResource(keyword, null, true);
 		assertThat(response.getStatus(), is(responseCode));
 	}
 
 	public void getUserResourceAndAssertUsersCount(String keyword, int count) {
-		Response response = getUserResource(keyword, null);
+		Response response = getUserResource(keyword, null, true);
 		UserList users = response.readEntity(UserList.class);
 		assertThat(users.getUsers().size(), is(count));
 	}
 
-	public Response getUserResource(String keyword, List<Double> location) {
+	public Response getUserResource(String keyword, List<Double> location,
+			boolean credential) {
 		try {
 			userRepository.deleteAll();
 			userRepository.save(dummyUser);
 			Response response = null;
 			Invocation.Builder invocationBuilder = null;
 			WebTarget resourceWebTarget = target.path("users");
+			if (credential)
+				resourceWebTarget.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
 
 			if (location != null) {
 				WebTarget nearParam = resourceWebTarget.queryParam("near",
@@ -177,8 +181,8 @@ public class SearchResourceTest {
 
 	@Test
 	public void getNearbyProductsFromResourceWithInvalidLocationAndCheckResponseCode() {
-		getProductResourceAndAssertResponseCode(
-				Arrays.asList(360.123212, 360.654321), 400);
+		getProductResourceAndAssertResponseCode(new Point(360.123212,
+				360.654321), 400);
 	}
 
 	@Test

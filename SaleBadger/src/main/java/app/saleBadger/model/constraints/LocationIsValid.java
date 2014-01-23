@@ -7,12 +7,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.List;
 
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
+
+import org.springframework.data.mongodb.core.geo.Point;
 
 import app.saleBadger.model.constraints.LocationIsValid.LocationValidator;
 
@@ -33,7 +34,7 @@ public @interface LocationIsValid {
 	Class<? extends Payload>[] payload() default {};
 
 	public class LocationValidator implements
-			ConstraintValidator<LocationIsValid, List<Double>> {
+			ConstraintValidator<LocationIsValid, Point> {
 
 		@Override
 		public void initialize(LocationIsValid location) {
@@ -42,22 +43,21 @@ public @interface LocationIsValid {
 		}
 
 		@Override
-		public boolean isValid(List<Double> location,
+		public boolean isValid(Point location,
 				ConstraintValidatorContext context) {
 			// TODO Auto-generated method stub
 			boolean isValid = true;
 			context.disableDefaultConstraintViolation();
-			if (location.size() != 2)
-				return false;
+
 			// first variable is longitude, second variable is latitude
-			if (location.get(0) < MIN_LATITUDE || location.get(0) > MAX_LATITUDE) {
+			if (location.getX() < MIN_LATITUDE || location.getX() > MAX_LATITUDE) {
 				context.buildConstraintViolationWithTemplate(
 						"{product.wrong.location.latitude}")
 						.addConstraintViolation();
 				isValid = false;
 			} 
-			if (location.get(1) < MIN_LONGITUDE
-					|| location.get(1) > MAX_LONGITUDE) {
+			if (location.getY() < MIN_LONGITUDE
+					|| location.getY() > MAX_LONGITUDE) {
 				context.buildConstraintViolationWithTemplate(
 						"{product.wrong.location.longitude}")
 						.addConstraintViolation();

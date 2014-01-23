@@ -1,20 +1,22 @@
 package app.saleBadger.model;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.geo.Point;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import app.saleBadger.model.constraints.LocationIsValid;
+import app.saleBadger.model.serializer.LocationDeserializer;
+import app.saleBadger.model.serializer.LocationSerializer;
 import app.saleBadger.model.serializer.ObjectIdSerializer;
 
 @Document(collection = "products")
@@ -33,7 +35,9 @@ public class Product {
 	private Price price;
 	@NotNull
 	@LocationIsValid
-	private List<Double> location;
+	@JsonSerialize(using = LocationSerializer.class)
+	@JsonDeserialize(using = LocationDeserializer.class)
+	private Point location;
 
 	private Date dateCreated;
 
@@ -44,7 +48,7 @@ public class Product {
 	}
 
 	public Product(String name, String description, Price price,
-			String ownerId, List<Double> location) {
+			String ownerId, Point location) {
 		this.id = new ObjectId();
 		this.name = name;
 		this.description = description;
@@ -55,17 +59,16 @@ public class Product {
 
 	}
 
-	public static List<Double> getLocation(String location) {
+	public static Point getLocation(String location) {
 		String[] locationString = location.split(";");
 
 		if (locationString.length != 2) {
 			return null;
 		}
 
-		List<Double>locations = new ArrayList<Double>();
-		for (int i = 0; i < locationString.length; i++) {
-			locations.add(Double.parseDouble(locationString[i]));
-		}
+		Point locations = new Point(Double.parseDouble(locationString[0]),
+				Double.parseDouble(locationString[1]));
+
 		return locations;
 	}
 
@@ -109,11 +112,11 @@ public class Product {
 		this.price = price;
 	}
 
-	public List<Double> getLocation() {
+	public Point getLocation() {
 		return location;
 	}
 
-	public void setLocation(List<Double> location) {
+	public void setLocation(Point location) {
 		this.location = location;
 	}
 

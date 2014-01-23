@@ -3,7 +3,6 @@ package app.saleBadger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Arrays;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -27,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.data.mongodb.core.geo.Point;
 
 import app.saleBadger.model.Price;
 import app.saleBadger.model.Product;
@@ -41,7 +41,7 @@ public class ProductResourceTest {
 	private final Currency gbp = Currency.getInstance(new Locale("en", "GB"));
 	private final Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
 	private final Product dummyProduct = new Product("iPhone", "Description",
-			iPhonePrice, "lunayo", Arrays.asList(15.123212, 61.654321));
+			iPhonePrice, "lunayo", new Point(15.123212, 61.654321));
 	private final User dummyUser = new User("lunayo", "qwertyui",
 			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh");
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
@@ -232,7 +232,7 @@ public class ProductResourceTest {
 	@Test
 	public void updateProductInResourceWithNonExistedProductAndCheckResponseCode() {
 		Product product = new Product("iPhone 4", "Description", iPhonePrice,
-				"lunayo", Arrays.asList(15.123212, 61.654321));
+				"lunayo", new Point(15.123212, 61.654321));
 		updateProductInResourceAndAssertResponseCode(product, 404);
 	}
 

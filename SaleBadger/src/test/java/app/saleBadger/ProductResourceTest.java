@@ -28,6 +28,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.geo.Point;
 
+import app.saleBadger.model.Contact;
 import app.saleBadger.model.Price;
 import app.saleBadger.model.Product;
 import app.saleBadger.model.Role;
@@ -38,12 +39,14 @@ import app.saleBadger.model.dao.config.SpringMongoConfig;
 
 public class ProductResourceTest {
 
-	private final Currency gbp = Currency.getInstance(new Locale("en", "GB"));
+	private final Locale gb = new Locale("en", "GB");
+	private final Currency gbp = Currency.getInstance(gb);
 	private final Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
 	private final Product dummyProduct = new Product("iPhone", "Description",
 			iPhonePrice, "lunayo", new Point(15.123212, 61.654321));
+	private final Contact userContact = new Contact(gb.getCountry(), gb.getDisplayCountry(), "7446653997");
 	private final User dummyUser = new User("lunayo", "qwertyui",
-			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh");
+			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh", userContact);
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
 			SpringMongoConfig.class);
 	private final UserRepository userRepository = context

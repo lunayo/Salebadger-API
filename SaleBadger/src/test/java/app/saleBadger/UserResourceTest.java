@@ -3,6 +3,8 @@ package app.saleBadger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Locale;
+
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.client.Client;
@@ -22,6 +24,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import app.saleBadger.model.Contact;
 import app.saleBadger.model.Role;
 import app.saleBadger.model.User;
 import app.saleBadger.model.dao.UserRepository;
@@ -29,8 +32,10 @@ import app.saleBadger.model.dao.config.SpringMongoConfig;
 
 public class UserResourceTest {
 
+	private final Locale gb = new Locale("en", "GB");
+	private final Contact userContact = new Contact(gb.getCountry(), gb.getDisplayCountry(), "7446653997");
 	private final User dummyUser = new User("lunayo", "qwertyui",
-			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh");
+			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh", userContact);
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
 			SpringMongoConfig.class);
 	private final UserRepository userRepository = context
@@ -173,7 +178,7 @@ public class UserResourceTest {
 		userRepository.deleteAll();
 		userRepository.save(dummyUser);
 		User user = new User("dfse", "qwertyui", "123", Role.ADMIN, "Iskandar",
-				"Goh");
+				"Goh", userContact);
 		addUserToResourceAndAssertResponse(user, 400);
 	}
 
@@ -210,21 +215,21 @@ public class UserResourceTest {
 	@Test
 	public void updateUserInResourceWithInvalidUsernameAndCheckResponseCode() {
 		User user = new User(" ", "as ", "luncodebadgecom", Role.ADMIN, "asd",
-				"Goh");
+				"Goh", userContact);
 		updateUserInResourceAndAssertResponse(user, 400, true);
 	}
 
 	@Test
 	public void updateUserInResourceWithNonExistedUserAndCheckResponseCode() {
 		User user = new User("lisanina", "asasdasasd", "lisa@codebadge.com",
-				Role.ADMIN, "asdfffda", "Goh");
+				Role.ADMIN, "asdfffda", "Goh", userContact);
 		updateUserInResourceAndAssertResponse(user, 404, true);
 	}
 
 	@Test
 	public void updateUserInResourceWithInvalidEmailAndCheckResponseCode() {
 		User user = new User("lunayo", "asasdasasd", "lisacodebadgecom",
-				Role.ADMIN, "asdfffda", "Goh");
+				Role.ADMIN, "asdfffda", "Goh", userContact);
 		updateUserInResourceAndAssertResponse(user, 400, true);
 	}
 

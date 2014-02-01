@@ -60,7 +60,7 @@ public class Product {
 	}
 
 	public static Point getLocation(String location) {
-		String[] locationString = location.split(";");
+		String[] locationString = location.split(",");
 
 		if (locationString.length != 2) {
 			return null;

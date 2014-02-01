@@ -26,6 +26,7 @@ public class User {
 	@NotBlank
 	@EmailIsValid
 	private String email;
+	private Contact contact;
 	private Date dateCreated;
 	private Date dateModified;
 	private String role;
@@ -37,7 +38,7 @@ public class User {
 	}
 
 	public User(String username, String password, String email, String role,
-			String firstName, String lastName) {
+			String firstName, String lastName, Contact contact) {
 		super();
 		this.username = username;
 		this.setPassword(password);
@@ -47,6 +48,7 @@ public class User {
 		this.dateCreated = new Date();
 		this.dateModified = new Date();
 		this.role = role;
+		this.contact = contact;
 	}
 
 	public Date getDateCreated() {
@@ -107,7 +109,14 @@ public class User {
 	public String getRole(){
 		return role;
 	}
-	
+
+	public Contact getContact() {
+		return contact;
+	}
+
+	public void setContact(Contact contact) {
+		this.contact = contact;
+	}
 
 	private void updateDateModified() {
 		this.dateModified = new Date();

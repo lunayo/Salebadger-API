@@ -1,7 +1,5 @@
 package app.saleBadger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -40,18 +38,22 @@ public class SearchResource {
 			.getBean(UserRepository.class);
 
 	// product search
-	// Query params ?near=longitude;latitude
+	// Query params ?near=longitude,latitude
 	@GET
 	@PermitAll
 	@Path("products")
 	public ProductList getProducts(@QueryParam("q") String keyword,
 			@QueryParam("near") String location) {
+
+		// TODO: add more filter parameters such as, limit or page
+
 		Point locations = null;
 
 		if (location != null) {
 			// parse the locations variable
 			locations = Product.getLocation(location);
-			// validate the value programmatically
+			// validate the location value programmatically
+			// since it is a parameter, it can be validated by bean validation
 			Set<ConstraintViolation<Product>> constraints = Validation
 					.buildDefaultValidatorFactory()
 					.getValidator()
@@ -71,15 +73,27 @@ public class SearchResource {
 	// user search
 	@GET
 	@Path("users")
-	public UserList getUsers(@QueryParam("q") String keyword) {
-		HashMap<String, Object> params = new HashMap<String, Object>();
-		List<User> users = new ArrayList<User>();
+	public UserList getUsers(@QueryParam("q") String keyword,
+			@QueryParam("near") String location) {
 
-		if (keyword != null) {
-			params.put("username", keyword);
+		Point locations = null;
+
+		if (location != null) {
+			// parse the locations variable
+			locations = Product.getLocation(location);
+			// validate the location value programmatically
+			// since it is a parameter, it can be validated by bean validation
+			Set<ConstraintViolation<Product>> constraints = Validation
+					.buildDefaultValidatorFactory()
+					.getValidator()
+					.validateValue(Product.class, "location", locations,
+							Default.class);
+			if (locations == null || constraints.size() > 0) {
+				throw new ConstraintViolationException(constraints);
+			}
 		}
 
-		users = userRepository.findAll();
+		List<User> users = userRepository.findByQuery(keyword, locations, 0, 0);
 
 		return new UserList(users);
 	}

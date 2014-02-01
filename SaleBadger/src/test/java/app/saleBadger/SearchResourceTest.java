@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Currency;
-import java.util.List;
 import java.util.Locale;
 
 import javax.net.ssl.SSLContext;
@@ -28,6 +27,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.geo.Point;
 
+import app.saleBadger.model.Contact;
 import app.saleBadger.model.Price;
 import app.saleBadger.model.Product;
 import app.saleBadger.model.ProductList;
@@ -40,12 +40,14 @@ import app.saleBadger.model.dao.config.SpringMongoConfig;
 
 public class SearchResourceTest {
 
-	private final Currency gbp = Currency.getInstance(new Locale("en", "GB"));
+	private final Locale gb = new Locale("en", "GB");
+	private final Currency gbp = Currency.getInstance(gb);
 	private final Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
 	private final Product dummyProduct = new Product("iPhone", "Description",
 			iPhonePrice, "lunayo", new Point(15.123212, 61.654321));
+	private final Contact userContact = new Contact(gb.getCountry(), gb.getDisplayCountry(), "7446653997");
 	private final User dummyUser = new User("lunayo", "qwertyui",
-			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh");
+			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh", userContact);
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
 			SpringMongoConfig.class);
 	private final ProductRepository productRepository = context
@@ -111,7 +113,7 @@ public class SearchResourceTest {
 
 			if (location != null) {
 				WebTarget nearParam = resourceWebTarget.queryParam("near",
-						location.getX() + ";" + location.getY());
+						location.getX() + "," + location.getY());
 				invocationBuilder = nearParam
 						.request(MediaType.APPLICATION_JSON);
 			}
@@ -132,17 +134,17 @@ public class SearchResourceTest {
 
 	public void getUserResourceAndAssertResponseCode(String keyword,
 			int responseCode) {
-		Response response = getUserResource(keyword, null, true);
+		Response response = getUserResource(keyword, true);
 		assertThat(response.getStatus(), is(responseCode));
 	}
 
 	public void getUserResourceAndAssertUsersCount(String keyword, int count) {
-		Response response = getUserResource(keyword, null, true);
+		Response response = getUserResource(keyword, true);
 		UserList users = response.readEntity(UserList.class);
 		assertThat(users.getUsers().size(), is(count));
 	}
 
-	public Response getUserResource(String keyword, List<Double> location,
+	public Response getUserResource(String keyword,
 			boolean credential) {
 		try {
 			userRepository.deleteAll();
@@ -153,12 +155,6 @@ public class SearchResourceTest {
 			if (credential)
 				resourceWebTarget.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
 
-			if (location != null) {
-				WebTarget nearParam = resourceWebTarget.queryParam("near",
-						location.get(0) + ";" + location.get(1));
-				invocationBuilder = nearParam
-						.request(MediaType.APPLICATION_JSON);
-			}
 			if (keyword != null) {
 				WebTarget qTarget = resourceWebTarget.queryParam("q", keyword);
 				invocationBuilder = qTarget.request(MediaType.APPLICATION_JSON);
@@ -195,10 +191,10 @@ public class SearchResourceTest {
 		getProductResourceAndAssertProductsCount(dummyProduct.getName(), 1);
 	}
 
-	// @Test
-	// public void getUsersFromResourceWithSearchKeywordAndCheckResponseCode() {
-	// getUserResourceAndAssertResponseCode("black", 200);
-	// }
+	 @Test
+	 public void getUsersFromResourceWithSearchKeywordAndCheckResponseCode() {
+		 getUserResourceAndAssertResponseCode("black", 200);
+	 }
 
 	@Test
 	public void getUsersFromResourceWithSearchKeywordAndCheckCount() {

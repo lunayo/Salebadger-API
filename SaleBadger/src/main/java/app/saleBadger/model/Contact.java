@@ -1,9 +1,20 @@
 package app.saleBadger.model;
 
+import app.saleBadger.model.constraints.CountryCodeIsValid;
+import app.saleBadger.model.constraints.CountryIsValid;
+import app.saleBadger.model.constraints.CountryNameIsValid;
+import app.saleBadger.model.constraints.PhoneNumberIsValid;
+
+@CountryIsValid.List({
+	@CountryIsValid(countryCode = "countryCode", countryName = "countryName")
+})
 public class Contact {
 
+	@CountryCodeIsValid
 	private String countryCode;
+	@PhoneNumberIsValid
 	private String phoneNumber;
+	@CountryNameIsValid
 	private String countryName;
 	
 	public Contact() {

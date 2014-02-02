@@ -33,14 +33,15 @@ import app.saleBadger.model.dao.config.SpringMongoConfig;
 public class UserResourceTest {
 
 	private final Locale gb = new Locale("en", "GB");
-	private final Contact userContact = new Contact(gb.getCountry(), gb.getDisplayCountry(), "7446653997");
+	private final Contact userContact = new Contact(gb.getCountry(),
+			gb.getDisplayCountry(), "7446653997");
 	private final User dummyUser = new User("lunayo", "qwertyui",
 			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh", userContact);
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
 			SpringMongoConfig.class);
 	private final UserRepository userRepository = context
 			.getBean(UserRepository.class);
-	
+
 	private HttpServer server;
 	private WebTarget target;
 
@@ -171,6 +172,33 @@ public class UserResourceTest {
 		userRepository.deleteAll();
 		userRepository.save(dummyUser);
 		addUserToResourceAndAssertResponse(dummyUser, 409);
+	}
+
+	@Test
+	public void addUserResourceWithInvalidContactPhoneNumber() {
+		userRepository.deleteAll();
+		Contact invalidContact = new Contact("GB", "United Kingdom", "11");
+		User invalidUser = new User("lunayo", "qwertyui", "lun@codebadge.com",
+				Role.ADMIN, "Iskandar", "Goh", invalidContact);
+		addUserToResourceAndAssertResponse(invalidUser, 400);
+	}
+
+	@Test
+	public void addUserResourceWithInvalidContactCountryCode() {
+		userRepository.deleteAll();
+		Contact invalidContact = new Contact("ASD", "Indonesia", "74466532");
+		User invalidUser = new User("lunayo", "qwertyui", "lun@codebadge.com",
+				Role.ADMIN, "Iskandar", "Goh", invalidContact);
+		addUserToResourceAndAssertResponse(invalidUser, 400);
+	}
+
+	@Test
+	public void addUserResourceWithInvalidContactCountryName() {
+		userRepository.deleteAll();
+		Contact invalidContact = new Contact("GB", "asdfea", "74466532");
+		User invalidUser = new User("lunayo", "qwertyui", "lun@codebadge.com",
+				Role.ADMIN, "Iskandar", "Goh", invalidContact);
+		addUserToResourceAndAssertResponse(invalidUser, 400);
 	}
 
 	@Test

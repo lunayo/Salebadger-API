@@ -38,9 +38,7 @@ public class Product {
 	@JsonSerialize(using = LocationSerializer.class)
 	@JsonDeserialize(using = LocationDeserializer.class)
 	private Point location;
-
 	private Date dateCreated;
-
 	private Date dateModified;
 
 	public Product() {

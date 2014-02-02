@@ -2,6 +2,8 @@ package app.saleBadger.model;
 
 import java.util.Date;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -26,6 +28,8 @@ public class User {
 	@NotBlank
 	@EmailIsValid
 	private String email;
+	@NotNull
+	@Valid
 	private Contact contact;
 	private Date dateCreated;
 	private Date dateModified;

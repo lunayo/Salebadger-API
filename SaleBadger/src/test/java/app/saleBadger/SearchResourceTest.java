@@ -16,7 +16,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.SslConfigurator;
 import org.glassfish.jersey.client.filter.HttpBasicAuthFilter;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -62,13 +61,7 @@ public class SearchResourceTest {
 		// start the server
 		server = Main.startServer();
 
-		SslConfigurator sslConfig = SslConfigurator.newInstance()
-				.trustStoreFile(Main.TRUSTSTORE_CLIENT_FILE)
-				.trustStorePassword(Main.TRUSTSTORE_CLIENT_PWD)
-				.keyStoreFile(Main.KEYSTORE_CLIENT_FILE)
-				.keyPassword(Main.KEYSTORE_CLIENT_PWD);
-
-		final SSLContext sslContext = sslConfig.createSSLContext();
+		final SSLContext sslContext = Main.createSSLContext(false);
 
 		// create the client
 		Client c = ClientBuilder.newBuilder().sslContext(sslContext)

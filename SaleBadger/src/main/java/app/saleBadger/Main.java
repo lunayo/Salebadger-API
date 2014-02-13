@@ -1,10 +1,15 @@
 package app.saleBadger;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.security.KeyStore;
+import java.util.Properties;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -18,14 +23,14 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 public class Main {
 	// Base URI the Grizzly HTTP server will listen on
 	public static final String BASE_URI = "https://localhost:4463/v1/";
-	private static final String KEYSTORE_SERVER_FILE = "./server/keystore_server";
+	private static final String KEYSTORE_SERVER_FILE = "/server/keystore_server";
 	private static final String KEYSTORE_SERVER_PWD = "ARi=vZg4aPNy3P";
-	private static final String TRUSTSTORE_SERVER_FILE = "./server/truststore_server";
+	private static final String TRUSTSTORE_SERVER_FILE = "src/main/resources/server/truststore_server";
 	private static final String TRUSTSTORE_SERVER_PWD = "ARi=vZg4aPNy3P";
 	private static final String APP_PACKAGES_NAME = "app.saleBadger";
-	public static final String KEYSTORE_CLIENT_FILE = "./server/keystore_client";
+	public static final String KEYSTORE_CLIENT_FILE = "/server/keystore_client";
 	public static final String KEYSTORE_CLIENT_PWD = "ARi=vZg4aPNy3P";
-	public static final String TRUSTSTORE_CLIENT_FILE = "./server/truststore_client";
+	public static final String TRUSTSTORE_CLIENT_FILE = "src/main/resources/server/truststore_client";
 	public static final String TRUSTSTORE_CLIENT_PWD = "ARi=vZg4aPNy3P";
 
 	/**
@@ -43,15 +48,7 @@ public class Main {
 				.register(RolesAllowedDynamicFeature.class)
 				.register(JacksonFeature.class);
 
-		// ssl configuration
-		SSLContextConfigurator sslContext = new SSLContextConfigurator();
-
-		// setup security context
-		sslContext.setKeyStoreFile(KEYSTORE_SERVER_FILE);
-		sslContext.setKeyPass(KEYSTORE_SERVER_PWD);
-		sslContext.setTrustStoreFile(TRUSTSTORE_SERVER_FILE);
-		sslContext.setTrustStorePass(TRUSTSTORE_SERVER_PWD);
-
+		SSLContext sslContext = createSSLContext(true);
 		SSLEngineConfigurator sslEngine = new SSLEngineConfigurator(sslContext);
 
 		sslEngine.setClientMode(false);
@@ -61,6 +58,55 @@ public class Main {
 		// exposing the Jersey application at BASE_URI
 		return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI),
 				rc, true, sslEngine);
+	}
+
+	public static SSLContext createSSLContext(boolean isServer) {
+
+		try {
+			String keystoreFile = KEYSTORE_SERVER_FILE;
+			String keystorePassword = KEYSTORE_SERVER_PWD;
+			String trustStoreFile = TRUSTSTORE_SERVER_FILE;
+			String trustStorePassword = TRUSTSTORE_SERVER_PWD;
+
+			if (!isServer) {
+				keystoreFile = KEYSTORE_CLIENT_FILE;
+				keystorePassword = KEYSTORE_CLIENT_PWD;
+				trustStoreFile = TRUSTSTORE_CLIENT_FILE;
+				trustStorePassword = TRUSTSTORE_CLIENT_PWD;
+			}
+
+			// Set up the trust store
+			Properties systemProps = System.getProperties();
+			systemProps.put("javax.net.ssl.trustStore", trustStoreFile);
+			systemProps.put("javax.net.ssl.trustStorePassword",
+					trustStorePassword);
+			System.setProperties(systemProps);
+
+			// Load the key store.
+			KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+			InputStream keyStream = Main.class.getClass().getResourceAsStream(
+					keystoreFile);
+			keyStore.load(keyStream, keystorePassword.toCharArray());
+			keyStream.close();
+
+			// Create the factory from the keystore.
+			String kmfAlgorithm = System.getProperty(
+					"ssl.KeyManagerFactory.algorithm",
+					KeyManagerFactory.getDefaultAlgorithm());
+			KeyManagerFactory keyManagerFactory = KeyManagerFactory
+					.getInstance(kmfAlgorithm);
+			keyManagerFactory.init(keyStore, keystorePassword.toCharArray());
+
+			// Create the SSLContext
+			SSLContext sslContext = SSLContext.getInstance("TLS");
+			sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+			return sslContext;
+		}
+
+		// Wrap all Exceptions in a RuntimeException.
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

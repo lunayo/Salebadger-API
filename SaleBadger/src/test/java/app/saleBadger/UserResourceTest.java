@@ -15,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.client.filter.HttpBasicAuthFilter;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
 import org.junit.Before;
@@ -61,7 +61,7 @@ public class UserResourceTest {
 
 	@After
 	public void tearDown() throws Exception {
-		server.stop();
+		server.shutdown();
 	}
 
 	private void getUserResourceAndAssertResponse(String username,
@@ -70,7 +70,7 @@ public class UserResourceTest {
 			userRepository.deleteAll();
 			userRepository.save(dummyUser);
 			if (credential)
-				target.register(new HttpBasicAuthFilter("lunayo", password));
+				target.register(HttpAuthenticationFeature.basic("lunayo", password));
 			Response response = target.path("user/" + username)
 					.request(MediaType.APPLICATION_JSON).get(Response.class);
 
@@ -110,7 +110,7 @@ public class UserResourceTest {
 			userRepository.deleteAll();
 			userRepository.save(dummyUser);
 			if (credential)
-				target.register(new HttpBasicAuthFilter("lunayo", password));
+				target.register(HttpAuthenticationFeature.basic("lunayo", password));
 			Response response = target
 					.path("user/" + user.getUsername())
 					.request(MediaType.APPLICATION_JSON)
@@ -137,7 +137,7 @@ public class UserResourceTest {
 			userRepository.deleteAll();
 			userRepository.save(dummyUser);
 			if (credential)
-				target.register(new HttpBasicAuthFilter("lunayo", password));
+				target.register(HttpAuthenticationFeature.basic("lunayo", password));
 			Response response = target.path("user/" + username)
 					.request(MediaType.APPLICATION_JSON).delete();
 

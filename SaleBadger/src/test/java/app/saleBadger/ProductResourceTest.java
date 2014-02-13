@@ -17,7 +17,7 @@ import javax.ws.rs.core.Response;
 
 import org.bson.types.ObjectId;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.client.filter.HttpBasicAuthFilter;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
@@ -76,7 +76,7 @@ public class ProductResourceTest {
 
 	@After
 	public void tearDown() throws Exception {
-		server.stop();
+		server.shutdown();
 	}
 
 	public void getProductResourceAndAssertResponseCode(String username,
@@ -85,7 +85,7 @@ public class ProductResourceTest {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
 			Response response = null;
-			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
+			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
 			if (productId == null) {
 				// get list of products
 				response = target.path("users/" + username + "/products")
@@ -120,7 +120,7 @@ public class ProductResourceTest {
 	public void addProductToResourceAndAssertResponseCode(String username,
 			Product product, int responseCode) {
 		try {
-			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
+			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
 			Response response = target
 					.path("users/" + username + "/product")
 					.request(MediaType.APPLICATION_JSON)
@@ -144,7 +144,7 @@ public class ProductResourceTest {
 		try {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
-			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
+			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
 			Response response = target
 					.path("users/" + username + "/product/" + productId)
 					.request(MediaType.APPLICATION_JSON).delete();
@@ -166,7 +166,7 @@ public class ProductResourceTest {
 		try {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
-			target.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
+			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
 			Response response = target
 					.path("users/" + username + "/product/" + product.getId())
 					.request(MediaType.APPLICATION_JSON)

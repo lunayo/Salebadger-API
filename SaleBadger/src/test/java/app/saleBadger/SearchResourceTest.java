@@ -16,7 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.client.filter.HttpBasicAuthFilter;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
@@ -74,7 +74,7 @@ public class SearchResourceTest {
 
 	@After
 	public void tearDown() throws Exception {
-		server.stop();
+		server.shutdown();
 	}
 
 	public void getProductResourceAndAssertResponseCode(String keyword,
@@ -146,7 +146,7 @@ public class SearchResourceTest {
 			Invocation.Builder invocationBuilder = null;
 			WebTarget resourceWebTarget = target.path("users");
 			if (credential)
-				resourceWebTarget.register(new HttpBasicAuthFilter("lunayo", "qwertyui"));
+				resourceWebTarget.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
 
 			if (keyword != null) {
 				WebTarget qTarget = resourceWebTarget.queryParam("q", keyword);

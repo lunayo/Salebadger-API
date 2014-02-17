@@ -19,8 +19,9 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -53,9 +54,15 @@ public class SearchResourceTest {
 			.getBean(ProductRepository.class);
 	private final UserRepository userRepository = context
 			.getBean(UserRepository.class);
-	private HttpServer server;
+	private static HttpServer server;
 	private WebTarget target;
 
+	@BeforeClass
+	public static void startServer() {
+		// start the server
+		server = Main.startServer();
+	}
+	
 	@Before
 	public void setUp() throws Exception {
 		// start the server
@@ -73,8 +80,8 @@ public class SearchResourceTest {
 
 	}
 
-	@After
-	public void tearDown() throws Exception {
+	@AfterClass
+	public static void tearDown() throws Exception {
 		server.shutdown();
 	}
 

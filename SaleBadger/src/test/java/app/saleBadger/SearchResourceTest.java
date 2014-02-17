@@ -65,9 +65,6 @@ public class SearchResourceTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// start the server
-		server = Main.startServer();
-
 		final SSLContext sslContext = Main.createSSLContext(false);
 
 		// create the client

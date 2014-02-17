@@ -109,7 +109,7 @@
 			            </manifest>
 			            <manifestEntries>
 			              <implementation-version>${project.version}</implementation-version>
-			              <Implementation-Build>${buildNumber}</Implementation-Build>
+			              <Implementation-Build>${build.number}</Implementation-Build>
 			            </manifestEntries>
 		            </configuration>
 		          </execution>

@@ -4,7 +4,7 @@
     <groupId>app.saleBadger</groupId>
     <artifactId>SaleBadger</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.${build.number}</version>
     <name>SaleBadger</name>
     
     <dependencyManagement>
@@ -104,13 +104,6 @@
 		                  	<mainClass>app.saleBadger.Main</mainClass>
 		               	 </transformer>
 		              	</transformers>
-		              	<manifest>
-			              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-			            </manifest>
-			            <manifestEntries>
-			              <implementation-version>${project.version}</implementation-version>
-			              <Implementation-Build>${build.number}</Implementation-Build>
-			            </manifestEntries>
 		            </configuration>
 		          </execution>
 		        </executions>

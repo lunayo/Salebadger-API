@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.After;
 import org.junit.Before;
@@ -54,6 +55,7 @@ public class UserResourceTest {
 		// create the client
 		Client c = ClientBuilder.newBuilder().sslContext(sslContext)
 				.register(JacksonFeature.class).build();
+		c.register(new LoggingFilter());
 
 		target = c.target(Main.BASE_URI);
 

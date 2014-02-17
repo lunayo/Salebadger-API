@@ -67,6 +67,7 @@ public class SearchResourceTest {
 		Client c = ClientBuilder.newBuilder().sslContext(sslContext)
 				.register(new LoggingFilter()).register(JacksonFeature.class)
 				.build();
+		c.register(new LoggingFilter());
 
 		target = c.target(Main.BASE_URI);
 

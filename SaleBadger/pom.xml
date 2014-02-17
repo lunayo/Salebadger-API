@@ -99,11 +99,18 @@
 		              <goal>shade</goal>
 		            </goals>
 		            <configuration>
-		              <transformers>
-		                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-		                  <mainClass>app.saleBadger.Main</mainClass>
-		                </transformer>
-		              </transformers>
+		              	<transformers>
+		                	<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+		                  	<mainClass>app.saleBadger.Main</mainClass>
+		               	 </transformer>
+		              	</transformers>
+		              	<manifest>
+			              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+			            </manifest>
+			            <manifestEntries>
+			              <implementation-version>${project.version}</implementation-version>
+			              <Implementation-Build>${buildNumber}</Implementation-Build>
+			            </manifestEntries>
 		            </configuration>
 		          </execution>
 		        </executions>

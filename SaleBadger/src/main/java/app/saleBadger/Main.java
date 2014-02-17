@@ -9,6 +9,7 @@ import java.util.Properties;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
+import org.apache.log4j.BasicConfigurator;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -40,6 +41,9 @@ public class Main {
 	 * @return Grizzly HTTP server.
 	 */
 	public static HttpServer startServer() {
+		// start log4j configuration
+		BasicConfigurator.configure();
+		
 		// create a resource config that scans for JAX-RS resources and
 		// providers
 		// in com.example package

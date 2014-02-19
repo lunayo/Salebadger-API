@@ -35,7 +35,7 @@ import app.saleBadger.webexception.BadRequestException;
 import app.saleBadger.webexception.ConflictException;
 import app.saleBadger.webexception.NotFoundException;
 
-@Path("v1/user/{username}/")
+@Path("v1/user/{username}/product")
 @Produces(MediaType.APPLICATION_JSON)
 @RolesAllowed({ Role.ADMIN, Role.USER })
 public class ProductResource {
@@ -52,7 +52,7 @@ public class ProductResource {
 
 	// The Java method will process HTTP GET requests
 	@GET
-	@Path("/product/{id}")
+	@Path("{id}")
 	public Product getProduct(@NotNull @PathParam("id") ObjectId id) {
 		List<String> errors = new ArrayList<String>();
 
@@ -72,7 +72,7 @@ public class ProductResource {
 	}
 
 	@GET
-	@Path("/products")
+	@Path("/")
 	public ProductList getProducts() {
 		List<String> errors = new ArrayList<String>();
 
@@ -87,7 +87,7 @@ public class ProductResource {
 	}
 
 	@POST
-	@Path("/product")
+	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Product addProduct(@Valid Product product, @Context UriInfo uriInfo) {
 		List<String> errors = new ArrayList<String>();
@@ -120,7 +120,7 @@ public class ProductResource {
 	}
 
 	@PUT
-	@Path("/product/{id}")
+	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Product updateProduct(@NotNull @PathParam("id") ObjectId id,
 			@Valid Product product) {
@@ -150,7 +150,7 @@ public class ProductResource {
 	}
 
 	@DELETE
-	@Path("/product/{id}")
+	@Path("{id}")
 	public Response deleteProduct(@NotNull @PathParam("id") ObjectId id) {
 		List<String> errors = new ArrayList<String>();
 

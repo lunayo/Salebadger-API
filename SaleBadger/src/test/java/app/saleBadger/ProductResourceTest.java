@@ -94,7 +94,7 @@ public class ProductResourceTest {
 			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
 			if (productId == null) {
 				// get list of products
-				response = target.path("v1/user/" + username + "/products")
+				response = target.path("v1/user/" + username + "/product")
 						.request(MediaType.APPLICATION_JSON)
 						.get(Response.class);
 			} else {

@@ -94,13 +94,13 @@ public class ProductResourceTest {
 			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
 			if (productId == null) {
 				// get list of products
-				response = target.path("users/" + username + "/products")
+				response = target.path("v1/user/" + username + "/products")
 						.request(MediaType.APPLICATION_JSON)
 						.get(Response.class);
 			} else {
 				// get specific product
 				response = target
-						.path("users/" + username + "/product/" + productId)
+						.path("v1/user/" + username + "/product/" + productId)
 						.request(MediaType.APPLICATION_JSON)
 						.get(Response.class);
 			}
@@ -128,7 +128,7 @@ public class ProductResourceTest {
 		try {
 			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
 			Response response = target
-					.path("users/" + username + "/product")
+					.path("v1/user/" + username + "/product")
 					.request(MediaType.APPLICATION_JSON)
 					.post(Entity.entity(product, MediaType.APPLICATION_JSON),
 							Response.class);
@@ -152,7 +152,7 @@ public class ProductResourceTest {
 			productRepository.save(dummyProduct);
 			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
 			Response response = target
-					.path("users/" + username + "/product/" + productId)
+					.path("v1/user/" + username + "/product/" + productId)
 					.request(MediaType.APPLICATION_JSON).delete();
 			assertThat(response.getStatus(), is(responseCode));
 		} catch (Exception e) {
@@ -174,7 +174,7 @@ public class ProductResourceTest {
 			productRepository.save(dummyProduct);
 			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
 			Response response = target
-					.path("users/" + username + "/product/" + product.getId())
+					.path("v1/user/" + username + "/product/" + product.getId())
 					.request(MediaType.APPLICATION_JSON)
 					.put(Entity.entity(product, MediaType.APPLICATION_JSON),
 							Response.class);

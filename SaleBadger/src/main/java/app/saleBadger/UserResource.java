@@ -33,7 +33,7 @@ import app.saleBadger.webexception.ConflictException;
 import app.saleBadger.webexception.NotFoundException;
 
 // The users resource will be hosted at the URI path "/users"
-@Path("user/")
+@Path("v1/users/")
 // The Java method will produce content identified by the MIME Media
 @Produces(MediaType.APPLICATION_JSON)
 @RolesAllowed({Role.ADMIN, Role.USER})
@@ -44,7 +44,7 @@ public class UserResource {
 
 	// The Java method will process HTTP GET requests
 	@GET
-	@Path("{username}")
+	@Path("/{username}")
 	public User getUser(
 			@Size(min = 5, max = 20, message = "{user.wrong.username}")
 			@PathParam("username") String username) {
@@ -84,7 +84,7 @@ public class UserResource {
 	}
 
 	@PUT
-	@Path("/{username}")
+	@Path("{username}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User updateUser(
 			@Size(min = 5, max = 20, message = "{user.wrong.username}") 
@@ -110,7 +110,7 @@ public class UserResource {
 	}
 
 	@DELETE
-	@Path("/{username}")
+	@Path("{username}")
 	public Response deleteUser(
 			@Size(min = 5, max = 20, message = "{user.wrong.username}") 
 			@PathParam("username") String username) {

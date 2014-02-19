@@ -35,7 +35,7 @@ import app.saleBadger.webexception.BadRequestException;
 import app.saleBadger.webexception.ConflictException;
 import app.saleBadger.webexception.NotFoundException;
 
-@Path("users/{username}")
+@Path("v1/user/{username}/")
 @Produces(MediaType.APPLICATION_JSON)
 @RolesAllowed({ Role.ADMIN, Role.USER })
 public class ProductResource {

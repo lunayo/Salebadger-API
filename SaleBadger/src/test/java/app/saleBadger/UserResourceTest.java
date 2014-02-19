@@ -79,7 +79,7 @@ public class UserResourceTest {
 			userRepository.save(dummyUser);
 			if (credential)
 				target.register(HttpAuthenticationFeature.basic("lunayo", password));
-			Response response = target.path("user/" + username)
+			Response response = target.path("v1/users/" + username)
 					.request(MediaType.APPLICATION_JSON).get(Response.class);
 
 			assertThat(response.getStatus(), is(responseCode));
@@ -99,7 +99,7 @@ public class UserResourceTest {
 	private void addUserToResourceAndAssertResponse(User user, int responseCode) {
 		try {
 			Response response = target
-					.path("user")
+					.path("/v1/users")
 					.request(MediaType.APPLICATION_JSON)
 					.post(Entity.entity(user, MediaType.APPLICATION_JSON),
 							Response.class);
@@ -120,7 +120,7 @@ public class UserResourceTest {
 			if (credential)
 				target.register(HttpAuthenticationFeature.basic("lunayo", password));
 			Response response = target
-					.path("user/" + user.getUsername())
+					.path("v1/users/" + user.getUsername())
 					.request(MediaType.APPLICATION_JSON)
 					.put(Entity.entity(user, MediaType.APPLICATION_JSON),
 							Response.class);
@@ -146,7 +146,7 @@ public class UserResourceTest {
 			userRepository.save(dummyUser);
 			if (credential)
 				target.register(HttpAuthenticationFeature.basic("lunayo", password));
-			Response response = target.path("user/" + username)
+			Response response = target.path("v1/users/" + username)
 					.request(MediaType.APPLICATION_JSON).delete();
 
 			assertThat(response.getStatus(), is(responseCode));

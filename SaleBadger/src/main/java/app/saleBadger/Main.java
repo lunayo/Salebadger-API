@@ -22,7 +22,7 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
  */
 public class Main {
 	// Base URI the Grizzly HTTP server will listen on
-	public static final String BASE_URI = "https://localhost:4463/v1/";
+	public static final String BASE_URI = "https://localhost:4463/";
 	private static final String KEYSTORE_SERVER_FILE = "/server/keystore_server";
 	private static final String KEYSTORE_SERVER_PWD = "ARi=vZg4aPNy3P";
 	private static final String TRUSTSTORE_SERVER_FILE = "src/main/resources/server/truststore_server";

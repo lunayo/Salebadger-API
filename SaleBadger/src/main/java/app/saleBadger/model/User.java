@@ -54,6 +54,8 @@ public class User {
 		this.lastName = lastName;
 		this.role = role;
 		this.contact = contact;
+		this.dateCreated = new Date();
+		this.dateModified = new Date();
 	}
 
 	public Date getDateCreated() {

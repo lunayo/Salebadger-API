@@ -15,6 +15,7 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+import org.glassfish.jersey.server.validation.ValidationFeature;
 
 /**
  * Main class.
@@ -46,6 +47,7 @@ public class Main {
 		// in com.example package
 		final ResourceConfig rc = new ResourceConfig()
 				.packages(APP_PACKAGES_NAME)
+				.register(ValidationFeature.class)
 				.register(RolesAllowedDynamicFeature.class)
 				.register(JacksonFeature.class);
 

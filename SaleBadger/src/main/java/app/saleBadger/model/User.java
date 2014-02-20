@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,7 +20,7 @@ public class User {
 
 	@Id
 	private String username;
-	@Size(min = 6, max = 21, message = "{user.wrong.password}")
+	@Size(min = 6, message = "{user.wrong.password}")
 	private String password;
 	@NotBlank(message = "{user.wrong.firstname}")
 	private String firstName;
@@ -38,6 +39,9 @@ public class User {
 //	private List<Product> products;
 	
 	public User() {
+		this.dateCreated = new Date();
+		this.dateModified = new Date();
+		this.role = Role.USER;
 	}
 
 	public User(String username, String password, String email, String role,
@@ -48,8 +52,6 @@ public class User {
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.dateCreated = new Date();
-		this.dateModified = new Date();
 		this.role = role;
 		this.contact = contact;
 	}
@@ -67,6 +69,7 @@ public class User {
 		this.updateDateModified();
 	}
 
+	@JsonProperty
 	public void setPassword(String password) {
 		this.password = UserAuthentication
 				.getSaltedHashPassword(password);

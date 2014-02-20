@@ -36,7 +36,7 @@ import app.saleBadger.webexception.NotFoundException;
 @Path("v1/user/")
 // The Java method will produce content identified by the MIME Media
 @Produces(MediaType.APPLICATION_JSON)
-@RolesAllowed({Role.ADMIN, Role.USER})
+@RolesAllowed({Role.ADMIN, Role.RESTRICTED})
 public class UserResource {
 
 	ApplicationContext context = new AnnotationConfigApplicationContext(SpringMongoConfig.class);

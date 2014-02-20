@@ -88,6 +88,7 @@ public class ProductResource {
 
 	@POST
 	@Path("/")
+	@RolesAllowed({ Role.ADMIN, Role.RESTRICTED })
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Product addProduct(@Valid Product product, @Context UriInfo uriInfo) {
 		List<String> errors = new ArrayList<String>();
@@ -121,6 +122,7 @@ public class ProductResource {
 
 	@PUT
 	@Path("{id}")
+	@RolesAllowed({ Role.ADMIN, Role.RESTRICTED })
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Product updateProduct(@NotNull @PathParam("id") ObjectId id,
 			@Valid Product product) {
@@ -151,6 +153,7 @@ public class ProductResource {
 
 	@DELETE
 	@Path("{id}")
+	@RolesAllowed({ Role.ADMIN, Role.RESTRICTED })
 	public Response deleteProduct(@NotNull @PathParam("id") ObjectId id) {
 		List<String> errors = new ArrayList<String>();
 

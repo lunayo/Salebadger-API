@@ -93,6 +93,6 @@ public class AuthenticationRequestFilter implements ContainerRequestFilter {
 		}
 
 		requestContext.setSecurityContext(new AuthenticationSecurityContext(
-				user));
+				routingContext, user));
 	}
 }

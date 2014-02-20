@@ -44,9 +44,12 @@ public class ProductResourceTest {
 	private final Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
 	private final Product dummyProduct = new Product("iPhone", "Description",
 			iPhonePrice, "lunayo", new Point(15.123212, 61.654321));
-	private final Contact userContact = new Contact(gb.getCountry(), gb.getDisplayCountry(), "7446653997");
-	private final User dummyUser = new User("lunayo", "qwertyui",
+	private final Contact userContact = new Contact(gb.getCountry(),
+			gb.getDisplayCountry(), "7446653997");
+	private final User dummyAdmin = new User("lunayo", "qwertyui",
 			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh", userContact);
+	private final User dummyUser = new User("lunayo", "qwertyui",
+			"lun@codebadge.com", Role.USER, "Iskandar", "Goh", userContact);
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
 			SpringMongoConfig.class);
 	private final UserRepository userRepository = context
@@ -61,10 +64,10 @@ public class ProductResourceTest {
 		// start the server
 		server = Main.startServer();
 	}
-	
+
 	@Before
 	public void setUp() throws Exception {
-		
+
 		final SSLContext sslContext = Main.createSSLContext(false);
 
 		// create the client
@@ -72,12 +75,9 @@ public class ProductResourceTest {
 				.register(new LoggingFilter()).register(JacksonFeature.class)
 				.build();
 		c.register(new LoggingFilter());
-		
+
 		target = c.target(Main.BASE_URI);
 
-		// add at least one user
-		userRepository.deleteAll();
-		userRepository.save(dummyUser);
 	}
 
 	@AfterClass
@@ -91,7 +91,8 @@ public class ProductResourceTest {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
 			Response response = null;
-			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
+			target.register(HttpAuthenticationFeature.basic("lunayo",
+					"qwertyui"));
 			if (productId == null) {
 				// get list of products
 				response = target.path("v1/user/" + username + "/product")
@@ -113,20 +114,21 @@ public class ProductResourceTest {
 	}
 
 	public void getProductResourceAndAssertResponseCode(int responseCode) {
-		getProductResourceAndAssertResponseCode(dummyUser.getUsername(), null,
+		getProductResourceAndAssertResponseCode(dummyAdmin.getUsername(), null,
 				responseCode);
 	}
 
 	public void getProductResourceAndAssertResponseCode(ObjectId productId,
 			int responseCode) {
-		getProductResourceAndAssertResponseCode(dummyUser.getUsername(),
+		getProductResourceAndAssertResponseCode(dummyAdmin.getUsername(),
 				productId, responseCode);
 	}
 
 	public void addProductToResourceAndAssertResponseCode(String username,
 			Product product, int responseCode) {
 		try {
-			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
+			target.register(HttpAuthenticationFeature.basic("lunayo",
+					"qwertyui"));
 			Response response = target
 					.path("v1/user/" + username + "/product")
 					.request(MediaType.APPLICATION_JSON)
@@ -141,7 +143,7 @@ public class ProductResourceTest {
 
 	public void addProductToResourceAndAssertResponseCode(Product product,
 			int responseCode) {
-		addProductToResourceAndAssertResponseCode(dummyUser.getUsername(),
+		addProductToResourceAndAssertResponseCode(dummyAdmin.getUsername(),
 				product, responseCode);
 	}
 
@@ -150,7 +152,8 @@ public class ProductResourceTest {
 		try {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
-			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
+			target.register(HttpAuthenticationFeature.basic("lunayo",
+					"qwertyui"));
 			Response response = target
 					.path("v1/user/" + username + "/product/" + productId)
 					.request(MediaType.APPLICATION_JSON).delete();
@@ -163,8 +166,8 @@ public class ProductResourceTest {
 
 	public void deleteProductFromResourceAndAssertResponseCode(
 			ObjectId productId, int responseCode) {
-		deleteProductFromResourceAndAssertResponseCode(dummyUser.getUsername(),
-				productId, responseCode);
+		deleteProductFromResourceAndAssertResponseCode(
+				dummyAdmin.getUsername(), productId, responseCode);
 	}
 
 	public void updateProductInResourceAndAssertResponseCode(String username,
@@ -172,7 +175,8 @@ public class ProductResourceTest {
 		try {
 			productRepository.deleteAll();
 			productRepository.save(dummyProduct);
-			target.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
+			target.register(HttpAuthenticationFeature.basic("lunayo",
+					"qwertyui"));
 			Response response = target
 					.path("v1/user/" + username + "/product/" + product.getId())
 					.request(MediaType.APPLICATION_JSON)
@@ -187,40 +191,52 @@ public class ProductResourceTest {
 
 	public void updateProductInResourceAndAssertResponseCode(Product product,
 			int responseCode) {
-		updateProductInResourceAndAssertResponseCode(dummyUser.getUsername(),
+		updateProductInResourceAndAssertResponseCode(dummyAdmin.getUsername(),
 				product, responseCode);
 	}
 
 	@Test
 	public void getProductsFromResourceAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(dummyAdmin);
 		getProductResourceAndAssertResponseCode(200);
 	}
 
 	@Test
 	public void getProductFromResourceAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(dummyAdmin);
 		getProductResourceAndAssertResponseCode(dummyProduct.getId(), 200);
 	}
 
 	@Test
 	public void addProductToResourceAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(dummyAdmin);
 		productRepository.deleteAll();
 		addProductToResourceAndAssertResponseCode(dummyProduct, 200);
 	}
 
 	@Test
 	public void addProductToResourceWithInvalidUserAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(dummyAdmin);
 		productRepository.deleteAll();
 		addProductToResourceAndAssertResponseCode("lun", dummyProduct, 400);
 	}
 
 	@Test
 	public void addProductToResourceWithNonExistedUserAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(dummyAdmin);
 		productRepository.deleteAll();
 		addProductToResourceAndAssertResponseCode("lunaluna", dummyProduct, 404);
 	}
 
 	@Test
 	public void addProductToResourceWithExistedProductAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(dummyAdmin);
 		productRepository.deleteAll();
 		productRepository.save(dummyProduct);
 		addProductToResourceAndAssertResponseCode(dummyProduct, 409);
@@ -228,11 +244,15 @@ public class ProductResourceTest {
 
 	@Test
 	public void updateProductInResourceAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(dummyAdmin);
 		updateProductInResourceAndAssertResponseCode(dummyProduct, 200);
 	}
 
 	@Test
 	public void updateProductInResourceWithNonExistedProductAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(dummyAdmin);
 		Product product = new Product("iPhone 4", "Description", iPhonePrice,
 				"lunayo", new Point(15.123212, 61.654321));
 		updateProductInResourceAndAssertResponseCode(product, 404);
@@ -240,13 +260,44 @@ public class ProductResourceTest {
 
 	@Test
 	public void deleteProductFromResourceAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(dummyAdmin);
 		deleteProductFromResourceAndAssertResponseCode(dummyProduct.getId(),
 				204);
 	}
 
 	@Test
 	public void deleteProductFromResourceWithNonexistedProductAndCheckResponseCode() {
+		userRepository.deleteAll();
+		userRepository.save(dummyAdmin);
 		deleteProductFromResourceAndAssertResponseCode(new ObjectId(), 404);
+	}
+
+	@Test
+	public void addProductToResourceWithInvalidPermissionAndCheckResponseCode() {
+		// add at least one user
+		userRepository.deleteAll();
+		userRepository.save(dummyUser);
+		productRepository.deleteAll();
+		addProductToResourceAndAssertResponseCode("lun", dummyProduct, 403);
+	}
+	
+	@Test
+	public void updateProductToResourceWithInvalidPermissionAndCheckResponseCode() {
+		// add at least one user
+		userRepository.deleteAll();
+		userRepository.save(dummyUser);
+		productRepository.deleteAll();
+		updateProductInResourceAndAssertResponseCode("lun", dummyProduct, 403);
+	}
+	
+	@Test
+	public void deleteProductToResourceWithInvalidPermissionAndCheckResponseCode() {
+		// add at least one user
+		userRepository.deleteAll();
+		userRepository.save(dummyUser);
+		productRepository.deleteAll();
+		deleteProductFromResourceAndAssertResponseCode("lun", dummyProduct.getId(), 403);
 	}
 
 }

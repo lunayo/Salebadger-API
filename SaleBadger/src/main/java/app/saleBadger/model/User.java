@@ -19,16 +19,15 @@ public class User {
 
 	@Id
 	private String username;
-	@Size(min = 6)
+	@Size(min = 6, max = 21, message = "{user.wrong.password}")
 	private String password;
-	@NotBlank
+	@NotBlank(message = "{user.wrong.firstname}")
 	private String firstName;
-	@NotBlank
+	@NotBlank(message = "{user.wrong.lastname}")
 	private String lastName;
-	@NotBlank
 	@EmailIsValid
 	private String email;
-	@NotNull
+	@NotNull(message = "{user.wrong.contact}")
 	@Valid
 	private Contact contact;
 	private Date dateCreated;

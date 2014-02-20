@@ -61,6 +61,7 @@ public class UserResource {
 
 	@POST
 	@PermitAll
+	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User addUser(@Valid User user, @Context UriInfo uriInfo) {
 		List<String> errors = new ArrayList<String>();

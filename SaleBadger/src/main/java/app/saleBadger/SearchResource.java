@@ -26,7 +26,7 @@ import app.saleBadger.model.dao.ProductRepository;
 import app.saleBadger.model.dao.UserRepository;
 import app.saleBadger.model.dao.config.SpringMongoConfig;
 
-@Path("v1/")
+@Path("v1/search/")
 @Produces(MediaType.APPLICATION_JSON)
 public class SearchResource {
 

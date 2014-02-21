@@ -107,7 +107,7 @@ public class SearchResourceTest {
 			productRepository.save(dummyProduct);
 			Response response = null;
 			Invocation.Builder invocationBuilder = null;
-			WebTarget resourceWebTarget = target.path("v1/products");
+			WebTarget resourceWebTarget = target.path("v1/search/products");
 
 			if (location != null) {
 				WebTarget nearParam = resourceWebTarget.queryParam("near",
@@ -149,7 +149,7 @@ public class SearchResourceTest {
 			userRepository.save(dummyUser);
 			Response response = null;
 			Invocation.Builder invocationBuilder = null;
-			WebTarget resourceWebTarget = target.path("v1/users");
+			WebTarget resourceWebTarget = target.path("v1/search/users");
 			if (credential)
 				resourceWebTarget.register(HttpAuthenticationFeature.basic("lunayo", "qwertyui"));
 

@@ -28,6 +28,7 @@ import app.saleBadger.model.dao.config.SpringMongoConfig;
 
 @Path("v1/search/")
 @Produces(MediaType.APPLICATION_JSON)
+@PermitAll
 public class SearchResource {
 
 	private final ApplicationContext context = new AnnotationConfigApplicationContext(
@@ -40,7 +41,6 @@ public class SearchResource {
 	// product search
 	// Query params ?near=longitude,latitude
 	@GET
-	@PermitAll
 	@Path("products")
 	public ProductList getProducts(@QueryParam("q") String keyword,
 			@QueryParam("near") String location) {
@@ -76,6 +76,8 @@ public class SearchResource {
 	public UserList getUsers(@QueryParam("q") String keyword,
 			@QueryParam("near") String location) {
 
+		// TODO: remove sensitive properties for public 
+		
 		Point locations = null;
 
 		if (location != null) {

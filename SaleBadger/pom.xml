@@ -4,7 +4,7 @@
     <groupId>app.saleBadger</groupId>
     <artifactId>SaleBadger</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.${build.number}</version>
+    <version>0.0.0</version>
     <name>SaleBadger</name>
     
     <dependencyManagement>
@@ -87,6 +87,7 @@
     </dependencies>
 
     <build>
+    	<finalName>${project.artifactId}-${project.version}.${build.number}</finalName>
         <plugins>
             <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>

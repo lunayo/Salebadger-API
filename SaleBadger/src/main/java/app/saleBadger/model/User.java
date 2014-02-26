@@ -39,9 +39,6 @@ public class User {
 //	private List<Product> products;
 	
 	public User() {
-		this.dateCreated = new Date();
-		this.dateModified = new Date();
-		this.role = Role.USER;
 	}
 
 	public User(String username, String password, String email, String role,
@@ -68,29 +65,28 @@ public class User {
 
 	public void setUsername(String username) {
 		this.username = username;
-		this.updateDateModified();
 	}
 
 	@JsonProperty
 	public void setPassword(String password) {
 		this.password = UserAuthentication
 				.getSaltedHashPassword(password);
-		this.updateDateModified();
 	}
 
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
-		this.updateDateModified();
 	}
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
-		this.updateDateModified();
 	}
 
 	public void setEmail(String email) {
 		this.email = email;
-		this.updateDateModified();
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public String getUsername() {
@@ -125,8 +121,16 @@ public class User {
 	public void setContact(Contact contact) {
 		this.contact = contact;
 	}
+	
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
 
-	private void updateDateModified() {
+	public void setDateCreated() {
+		this.dateCreated = new Date();
+	}
+	
+	public void updateDateModified() {
 		this.dateModified = new Date();
 	}
 

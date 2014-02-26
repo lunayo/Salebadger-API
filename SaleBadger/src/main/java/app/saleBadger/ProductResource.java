@@ -15,9 +15,13 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.bson.types.ObjectId;
@@ -73,7 +77,7 @@ public class ProductResource {
 
 	@GET
 	@Path("/")
-	public ProductList getProducts() {
+	public Response getProducts(@Context Request request) {
 		List<String> errors = new ArrayList<String>();
 
 		if (!userRepository.exists(username)) {
@@ -83,7 +87,27 @@ public class ProductResource {
 
 		List<Product> products = productRepository.findByUsername(username);
 
-		return new ProductList(products);
+		// Generate Etag out of hashCode of user
+		EntityTag tag = new EntityTag(Integer.toString(products.toString()
+				.hashCode()));
+		CacheControl cc = new CacheControl();
+		// Set max age to one day
+		cc.setMaxAge(86400);
+		ResponseBuilder builder = request.evaluatePreconditions(tag);
+		if (builder != null) {
+			// means the preconditions have been met and the cache is valid
+			// we just need to reset the cachecontrol max age (optional)
+			builder.cacheControl(cc);
+			return builder.build();
+		}
+
+		// preconditions are not met and the cache is invalid
+		// need to send new value with reponse code 200 (OK)
+		builder = Response.ok(new ProductList(products));
+		// reset cache control and eTag (mandatory)
+		builder.cacheControl(cc);
+		builder.tag(tag);
+		return builder.build();
 	}
 
 	@POST
@@ -107,6 +131,7 @@ public class ProductResource {
 			throw new ConflictException(errors, uriInfo.getBaseUriBuilder()
 					.path("/products/{product}").build(product.getId()));
 		} else {
+			product.setDateCreated();
 			Product result = productRepository.save(product);
 
 			if (result != null) {
@@ -137,6 +162,10 @@ public class ProductResource {
 		}
 
 		if (productRepository.exists(id.toString())) {
+			Product storedProduct = productRepository.findOne(id.toString());
+			// update product modified date
+			product.setDateCreated(storedProduct.getDateCreated());
+			product.updateDateModified();
 			Product result = productRepository.save(product);
 			if (result != null) {
 				return result;

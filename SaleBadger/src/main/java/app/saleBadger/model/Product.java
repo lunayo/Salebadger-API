@@ -42,7 +42,6 @@ public class Product {
 	private Date dateModified;
 
 	public Product() {
-
 	}
 
 	public Product(String name, String description, Price price,
@@ -53,8 +52,8 @@ public class Product {
 		this.price = price;
 		this.location = location;
 		this.ownerId = ownerId;
-		dateCreated = new Date();
-
+		this.dateCreated = new Date();
+		this.dateModified = new Date();
 	}
 
 	public static Point getLocation(String location) {
@@ -121,17 +120,21 @@ public class Product {
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
+	}
+
+	public void setDateCreated() {
+		this.dateCreated = new Date();
 	}
 
 	public Date getDateModified() {
 		return dateModified;
 	}
 
-	public void setDateModified(Date dateModified) {
-		this.dateModified = dateModified;
+	public void updateDateModified() {
+		this.dateModified = new Date();
 	}
 
 	@Override

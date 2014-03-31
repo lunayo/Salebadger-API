@@ -3,6 +3,8 @@ package app.saleBadger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Locale;
+
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.client.Client;
@@ -19,11 +21,28 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import app.saleBadger.model.Contact;
+import app.saleBadger.model.Role;
+import app.saleBadger.model.User;
+import app.saleBadger.model.dao.UserRepository;
+import app.saleBadger.model.dao.config.SpringMongoConfig;
 
 public class AuthenticationResourceTest {
 
+	private final Locale gb = new Locale("en", "GB");
+	private final Contact userContact = new Contact(gb.getCountry(),
+			gb.getDisplayCountry(), "7446653997");
+	private final User dummyUser = new User("lunayo", "qwertyui",
+			"lun@codebadge.com", Role.USER, "Iskandar", "Goh", userContact);
 	private static HttpServer server;
 	private WebTarget target;
+	private final ApplicationContext context = new AnnotationConfigApplicationContext(
+			SpringMongoConfig.class);
+	private final UserRepository userRepository = context
+			.getBean(UserRepository.class);
 
 	@BeforeClass
 	public static void startServer() {
@@ -69,7 +88,8 @@ public class AuthenticationResourceTest {
 	public void authenticateUserWithInvalidCredentialShouldReturnForbiddenResponse() {
 		final String username = "lunayo";
 		final String password = "123434";
-
+		userRepository.deleteAll();
+		userRepository.save(dummyUser);
 		executeUserBasicAuthenticationAndAssertResponse(username, password, 403);
 	}
 	
@@ -77,7 +97,8 @@ public class AuthenticationResourceTest {
 	public void authenticateUserWithValidCredentialShouldReturnNoContentResponse() {
 		final String username = "lunayo";
 		final String password = "qwertyui";
-
+		userRepository.deleteAll();
+		userRepository.save(dummyUser);
 		executeUserBasicAuthenticationAndAssertResponse(username, password, 204);
 	}
 }

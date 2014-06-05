@@ -1,6 +1,7 @@
 package app.saleBadger;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -27,6 +28,7 @@ public class AuthenticationResource {
 
 	@GET
 	@Path("basic")
+	@Consumes(MediaType.APPLICATION_JSON)
 	public Response basicAuthentication() {
 
 		return Response.status(Response.Status.NO_CONTENT).build();

@@ -13,6 +13,7 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.validation.ValidationFeature;
@@ -49,7 +50,8 @@ public class Main {
 				.packages(APP_PACKAGES_NAME)
 				.register(ValidationFeature.class)
 				.register(RolesAllowedDynamicFeature.class)
-				.register(JacksonFeature.class);
+				.register(JacksonFeature.class)
+				.register(MultiPartFeature.class);
 
 		SSLContext sslContext = createSSLContext(true);
 		SSLEngineConfigurator sslEngine = new SSLEngineConfigurator(sslContext);

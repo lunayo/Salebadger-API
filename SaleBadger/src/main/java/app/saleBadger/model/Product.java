@@ -1,6 +1,7 @@
 package app.saleBadger.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -30,6 +31,7 @@ public class Product {
 	@NotEmpty
 	private String description;
 	private String ownerId;
+	private List<String> imagePaths;
 	@NotNull
 	@Valid
 	private Price price;
@@ -45,15 +47,24 @@ public class Product {
 	}
 
 	public Product(String name, String description, Price price,
-			String ownerId, Point location) {
+			String ownerId, Point location, List<String> imagePaths) {
 		this.id = new ObjectId();
 		this.name = name;
 		this.description = description;
 		this.price = price;
 		this.location = location;
 		this.ownerId = ownerId;
+		this.imagePaths = imagePaths;
 		this.dateCreated = new Date();
 		this.dateModified = new Date();
+	}
+	
+	public List<String> getImagePaths() {
+		return imagePaths;
+	}
+
+	public void setImagePaths(List<String> imagePaths) {
+		this.imagePaths = imagePaths;
 	}
 
 	public static Point getLocation(String location) {
@@ -120,7 +131,7 @@ public class Product {
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-	
+
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}

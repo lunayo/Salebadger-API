@@ -3,6 +3,7 @@ package app.saleBadger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Collections;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -44,7 +45,7 @@ public class SearchResourceTest {
 	private final Currency gbp = Currency.getInstance(gb);
 	private final Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
 	private final Product dummyProduct = new Product("iPhone", "Description",
-			iPhonePrice, "lunayo", new Point(15.123212, 61.654321));
+			iPhonePrice, "lunayo", new Point(15.123212, 61.654321), Collections.<String> emptyList());
 	private final Contact userContact = new Contact(gb.getCountry(), gb.getDisplayCountry(), "7446653997");
 	private final User dummyUser = new User("lunayo", "qwertyui",
 			"lun@codebadge.com", Role.ADMIN, "Iskandar", "Goh", userContact);

@@ -3,6 +3,7 @@ package app.saleBadger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Collections;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -16,10 +17,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -43,7 +48,7 @@ public class ProductResourceTest {
 	private final Currency gbp = Currency.getInstance(gb);
 	private final Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
 	private final Product dummyProduct = new Product("iPhone", "Description",
-			iPhonePrice, "lunayo", new Point(15.123212, 61.654321));
+			iPhonePrice, "lunayo", new Point(15.123212, 61.654321), Collections.<String> emptyList());
 	private final Contact userContact = new Contact(gb.getCountry(),
 			gb.getDisplayCountry(), "7446653997");
 	private final User dummyAdmin = new User("lunayo", "qwertyui",
@@ -74,6 +79,7 @@ public class ProductResourceTest {
 		Client c = ClientBuilder.newBuilder().sslContext(sslContext)
 				.register(new LoggingFilter()).register(JacksonFeature.class)
 				.build();
+		c.register(MultiPartFeature.class);
 		c.register(new LoggingFilter());
 
 		target = c.target(Main.BASE_URI);
@@ -129,10 +135,16 @@ public class ProductResourceTest {
 		try {
 			target.register(HttpAuthenticationFeature.basic("lunayo",
 					"qwertyui"));
+			final FormDataMultiPart mp = new FormDataMultiPart();
+			// Construct multiple part object
+			ObjectMapper mapper = new ObjectMapper();
+			FormDataBodyPart p =
+					new FormDataBodyPart("product", mapper.writeValueAsString(product));
+	        mp.bodyPart(p);
 			Response response = target
 					.path("v1/user/" + username + "/product")
 					.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(product, MediaType.APPLICATION_JSON),
+					.post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA),
 							Response.class);
 			assertThat(response.getStatus(), is(responseCode));
 		} catch (Exception e) {
@@ -254,7 +266,7 @@ public class ProductResourceTest {
 		userRepository.deleteAll();
 		userRepository.save(dummyAdmin);
 		Product product = new Product("iPhone 4", "Description", iPhonePrice,
-				"lunayo", new Point(15.123212, 61.654321));
+				"lunayo", new Point(15.123212, 61.654321), Collections.<String> emptyList());
 		updateProductInResourceAndAssertResponseCode(product, 404);
 	}
 

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -42,9 +43,9 @@ public class ProductRepositoryTest {
 	@Before
 	public void setUp() {
 		Point location = new Point(15.123212, 61.654321);
-
+		
 		product = new Product("iPhone", "Description", iPhonePrice, "samatase",
-				location);
+				location, Collections.<String> emptyList());
 		productRepository.deleteAll();
 
 		mockUser = mock(User.class);
@@ -77,7 +78,7 @@ public class ProductRepositoryTest {
 		// add 100 random products
 		for (int i = 0; i < 100; i++) {
 			Product productToAdd = new Product("dummy " + i, "Description",
-					iPhonePrice, "samatase", getRandomLocation());
+					iPhonePrice, "samatase", getRandomLocation(), Collections.<String> emptyList());
 			productRepository.save(productToAdd);
 		}
 		int skip = 0;
@@ -92,12 +93,12 @@ public class ProductRepositoryTest {
 	public void addManyProductsQueryByUserName() {
 		for (int i = 0; i < 10; i++) {
 			Product productToAdd = new Product("dummy " + i, "Description",
-					iPhonePrice, mockUser.getUsername(), getRandomLocation());
+					iPhonePrice, mockUser.getUsername(), getRandomLocation(), Collections.<String> emptyList());
 			productRepository.save(productToAdd);
 		}
 		for (int i = 0; i < 20; i++) {
 			Product productToAdd = new Product("other " + i, "Description",
-					iPhonePrice, "thisIsCrap", getRandomLocation());
+					iPhonePrice, "thisIsCrap", getRandomLocation(), Collections.<String> emptyList());
 			productRepository.save(productToAdd);
 		}
 

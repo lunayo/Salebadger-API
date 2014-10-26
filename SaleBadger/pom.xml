@@ -29,6 +29,10 @@
 		    <artifactId>jersey-media-json-jackson</artifactId>
 		</dependency> 
 		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-multipart</artifactId>
+		</dependency>
+		<dependency>
 		    <groupId>org.glassfish.jersey.ext</groupId>
 		    <artifactId>jersey-bean-validation</artifactId>
 		</dependency>
@@ -83,6 +87,11 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.9.3</version>
 		</dependency>
     </dependencies>
 

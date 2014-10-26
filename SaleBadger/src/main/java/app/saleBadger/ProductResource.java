@@ -1,10 +1,19 @@
 package app.saleBadger;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
@@ -25,6 +34,9 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -34,9 +46,11 @@ import app.saleBadger.model.Role;
 import app.saleBadger.model.dao.ProductRepository;
 import app.saleBadger.model.dao.UserRepository;
 import app.saleBadger.model.dao.config.SpringMongoConfig;
+import app.saleBadger.util.HashGeneratorUtils;
 import app.saleBadger.validator.ErrorMessagesMapper;
 import app.saleBadger.webexception.BadRequestException;
 import app.saleBadger.webexception.ConflictException;
+import app.saleBadger.webexception.HashGenerationException;
 import app.saleBadger.webexception.NotFoundException;
 
 @Path("v1/user/{username}/product")
@@ -113,36 +127,101 @@ public class ProductResource {
 	@POST
 	@Path("/")
 	@RolesAllowed({ Role.ADMIN, Role.RESTRICTED })
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Product addProduct(@Valid Product product, @Context UriInfo uriInfo) {
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Product addProduct(FormDataMultiPart multiPart,
+			@Context UriInfo uriInfo) {
 		List<String> errors = new ArrayList<String>();
 
-		product.setOwnerId(username);
-
-		if (!userRepository.exists(username)) {
-			errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
-			throw new NotFoundException(errors);
-		}
-
-		if (productRepository.exists(product.getId().toString())) {
-			// product exists in the repository
-			// throw conflict
-			errors.add(ErrorMessagesMapper.getString("product.does.exist"));
-			throw new ConflictException(errors, uriInfo.getBaseUriBuilder()
-					.path("/products/{product}").build(product.getId()));
-		} else {
-			product.setDateCreated();
-			Product result = productRepository.save(product);
-
-			if (result != null) {
-				return result;
-			} else {
-				// throw bad request
-				errors.add(ErrorMessagesMapper.getString("app.unknown.error"));
-				throw new BadRequestException(errors);
+		// Get images file
+		List<FormDataBodyPart> images = multiPart.getFields("image");
+		if (images != null) {
+			ArrayList<String> imagePath = new ArrayList<String>();
+			for (FormDataBodyPart image : images) {
+				InputStream is = image.getEntityAs(InputStream.class);
+				String fileName = username + image.getName();
+				
+				// Save to temporary folder 
+				try {
+					String fileNameHash = HashGeneratorUtils.generateSHA1(fileName);
+					
+					File temp = File.createTempFile(fileNameHash, ".jpg"); 
+				    OutputStream outStream = new FileOutputStream(temp);
+				 
+				    byte[] buffer = new byte[8 * 1024];
+				    int bytesRead;
+				    while ((bytesRead = is.read(buffer)) != -1) {
+				        outStream.write(buffer, 0, bytesRead);
+				    }
+				    
+				    imagePath.add(temp.getAbsolutePath());
+				    
+				    outStream.close();
+				    is.close();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					errors.add(ErrorMessagesMapper.getString("app.unknown.error"));
+					throw new BadRequestException(errors);
+				}		
 			}
-		}
+			
+			// Upload images to Amazon S3
+			if (imagePath.size() > 0) {
+				
+			}
+		}		
 
+		// Get product data in json
+		String productJson = multiPart.getField("product").getEntityAs(
+				String.class);
+		ObjectMapper mapper = new ObjectMapper();
+
+		try {
+			Product product = mapper.readValue(productJson, Product.class);
+
+			product.setOwnerId(username);
+
+			// validate the location value programmatically
+			// since it is a parameter, it can be validated by bean validation
+			Set<ConstraintViolation<Product>> constraints = Validation
+					.buildDefaultValidatorFactory()
+					.getValidator().
+					validate(product, Product.class);
+			if (constraints.size() > 0) {
+				throw new ConstraintViolationException(constraints);
+			}
+
+			if (!userRepository.exists(username)) {
+				errors.add(ErrorMessagesMapper.getString("user.does.not.exist"));
+				throw new NotFoundException(errors);
+			}
+
+			if (productRepository.exists(product.getId().toString())) {
+				// product exists in the repository
+				// throw conflict
+				errors.add(ErrorMessagesMapper.getString("product.does.exist"));
+				throw new ConflictException(errors, uriInfo.getBaseUriBuilder()
+						.path("/products/{product}").build(product.getId()));
+			} else {
+				product.setDateCreated();
+				Product result = productRepository.save(product);
+
+				if (result != null) {
+					return result;
+				} else {
+					// throw bad request
+					errors.add(ErrorMessagesMapper
+							.getString("app.unknown.error"));
+					throw new BadRequestException(errors);
+				}
+			}
+		} catch (IOException e) {
+			// Parsing product error
+			e.printStackTrace();
+			// Throw bad request
+			errors.add(ErrorMessagesMapper.getString("app.unknown.error"));
+			throw new BadRequestException(errors);
+		}
 	}
 
 	@PUT

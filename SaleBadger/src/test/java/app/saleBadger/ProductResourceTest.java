@@ -3,6 +3,8 @@ package app.saleBadger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.Locale;
@@ -48,7 +50,8 @@ public class ProductResourceTest {
 	private final Currency gbp = Currency.getInstance(gb);
 	private final Price iPhonePrice = new Price(499, gbp.getCurrencyCode());
 	private final Product dummyProduct = new Product("iPhone", "Description",
-			iPhonePrice, "lunayo", new Point(15.123212, 61.654321), Collections.<String> emptyList());
+			iPhonePrice, "lunayo", new Point(15.123212, 61.654321),
+			Collections.<String> emptyList());
 	private final Contact userContact = new Contact(gb.getCountry(),
 			gb.getDisplayCountry(), "7446653997");
 	private final User dummyAdmin = new User("lunayo", "qwertyui",
@@ -131,16 +134,24 @@ public class ProductResourceTest {
 	}
 
 	public void addProductToResourceAndAssertResponseCode(String username,
-			Product product, int responseCode) {
+			File[] images, Product product, int responseCode) {
 		try {
 			target.register(HttpAuthenticationFeature.basic("lunayo",
 					"qwertyui"));
 			final FormDataMultiPart mp = new FormDataMultiPart();
 			// Construct multiple part object
 			ObjectMapper mapper = new ObjectMapper();
-			FormDataBodyPart p =
-					new FormDataBodyPart("product", mapper.writeValueAsString(product));
-	        mp.bodyPart(p);
+			FormDataBodyPart p = new FormDataBodyPart("product",
+					mapper.writeValueAsString(product));
+			mp.bodyPart(p);
+			if (images != null) {
+				// append images to the form
+				for (File image : images) {
+					FormDataBodyPart fdp = new FormDataBodyPart("image", image,
+							MediaType.APPLICATION_OCTET_STREAM_TYPE);
+					mp.bodyPart(fdp);
+				}
+			}
 			Response response = target
 					.path("v1/user/" + username + "/product")
 					.request(MediaType.APPLICATION_JSON)
@@ -151,6 +162,18 @@ public class ProductResourceTest {
 			e.printStackTrace();
 			throw new InternalServerErrorException();
 		}
+	}
+
+	public void addProductToResourceAndAssertResponseCode(String username,
+			Product product, int responseCode) {
+		addProductToResourceAndAssertResponseCode(username, null, product,
+				responseCode);
+	}
+
+	public void addProductToResourceAndAssertResponseCode(Product product,
+			File[] files, int responseCode) {
+		addProductToResourceAndAssertResponseCode(dummyAdmin.getUsername(),
+				files, product, responseCode);
 	}
 
 	public void addProductToResourceAndAssertResponseCode(Product product,
@@ -246,6 +269,18 @@ public class ProductResourceTest {
 	}
 
 	@Test
+	public void addProductWithImageToResourceAndAssertResponseCode() throws URISyntaxException {
+		userRepository.deleteAll();
+		userRepository.save(dummyAdmin);
+		productRepository.deleteAll();
+		// Get test images from resources folder
+		File[] images = new File[2];
+		images[0] = new File(getClass().getResource("/images/IMG_0300.JPG").toURI());
+		images[1] = new File(getClass().getResource("/images/IMG_0303.JPG").toURI());
+		addProductToResourceAndAssertResponseCode(dummyProduct, images, 200);
+	}
+
+	@Test
 	public void addProductToResourceWithExistedProductAndCheckResponseCode() {
 		userRepository.deleteAll();
 		userRepository.save(dummyAdmin);
@@ -266,7 +301,8 @@ public class ProductResourceTest {
 		userRepository.deleteAll();
 		userRepository.save(dummyAdmin);
 		Product product = new Product("iPhone 4", "Description", iPhonePrice,
-				"lunayo", new Point(15.123212, 61.654321), Collections.<String> emptyList());
+				"lunayo", new Point(15.123212, 61.654321),
+				Collections.<String> emptyList());
 		updateProductInResourceAndAssertResponseCode(product, 404);
 	}
 
@@ -293,7 +329,7 @@ public class ProductResourceTest {
 		productRepository.deleteAll();
 		addProductToResourceAndAssertResponseCode("lun", dummyProduct, 403);
 	}
-	
+
 	@Test
 	public void updateProductToResourceWithInvalidPermissionAndCheckResponseCode() {
 		// add at least one user
@@ -302,14 +338,15 @@ public class ProductResourceTest {
 		productRepository.deleteAll();
 		updateProductInResourceAndAssertResponseCode("lun", dummyProduct, 403);
 	}
-	
+
 	@Test
 	public void deleteProductToResourceWithInvalidPermissionAndCheckResponseCode() {
 		// add at least one user
 		userRepository.deleteAll();
 		userRepository.save(dummyUser);
 		productRepository.deleteAll();
-		deleteProductFromResourceAndAssertResponseCode("lun", dummyProduct.getId(), 403);
+		deleteProductFromResourceAndAssertResponseCode("lun",
+				dummyProduct.getId(), 403);
 	}
 
 }

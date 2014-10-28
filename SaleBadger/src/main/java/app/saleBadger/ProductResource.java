@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.ConstraintViolation;
@@ -16,6 +17,7 @@ import javax.validation.Valid;
 import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.validation.groups.Default;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -46,11 +48,10 @@ import app.saleBadger.model.Role;
 import app.saleBadger.model.dao.ProductRepository;
 import app.saleBadger.model.dao.UserRepository;
 import app.saleBadger.model.dao.config.SpringMongoConfig;
-import app.saleBadger.util.HashGeneratorUtils;
+import app.saleBadger.util.CloudStorageUploadUtils;
 import app.saleBadger.validator.ErrorMessagesMapper;
 import app.saleBadger.webexception.BadRequestException;
 import app.saleBadger.webexception.ConflictException;
-import app.saleBadger.webexception.HashGenerationException;
 import app.saleBadger.webexception.NotFoundException;
 
 @Path("v1/user/{username}/product")
@@ -64,6 +65,7 @@ public class ProductResource {
 			.getBean(ProductRepository.class);
 	private final UserRepository userRepository = context
 			.getBean(UserRepository.class);
+	private final String CloudStorageFolderName = "productImages";
 	@Size(min = 5, max = 20, message = "{user.wrong.username}")
 	@PathParam("username")
 	private String username;
@@ -135,41 +137,51 @@ public class ProductResource {
 		// Get images file
 		List<FormDataBodyPart> images = multiPart.getFields("image");
 		if (images != null) {
-			ArrayList<String> imagePath = new ArrayList<String>();
+			final ArrayList<File> files = new ArrayList<File>();
 			for (FormDataBodyPart image : images) {
 				InputStream is = image.getEntityAs(InputStream.class);
-				String fileName = username + image.getName();
-				
-				// Save to temporary folder 
+
+				// Save to temporary folder
 				try {
-					String fileNameHash = HashGeneratorUtils.generateSHA1(fileName);
-					
-					File temp = File.createTempFile(fileNameHash, ".jpg"); 
-				    OutputStream outStream = new FileOutputStream(temp);
-				 
-				    byte[] buffer = new byte[8 * 1024];
-				    int bytesRead;
-				    while ((bytesRead = is.read(buffer)) != -1) {
-				        outStream.write(buffer, 0, bytesRead);
-				    }
-				    
-				    imagePath.add(temp.getAbsolutePath());
-				    
-				    outStream.close();
-				    is.close();
+					File temp = File.createTempFile(UUID.randomUUID().toString(), ".jpg");
+					OutputStream outStream = new FileOutputStream(temp);
+
+					byte[] buffer = new byte[8 * 1024];
+					int bytesRead;
+					while ((bytesRead = is.read(buffer)) != -1) {
+						outStream.write(buffer, 0, bytesRead);
+					}
+
+					files.add(temp);
+
+					outStream.close();
+					is.close();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					errors.add(ErrorMessagesMapper.getString("app.unknown.error"));
+					errors.add(ErrorMessagesMapper
+							.getString("app.unknown.error"));
 					throw new BadRequestException(errors);
-				}		
+				}
 			}
-			
+
 			// Upload images to Amazon S3
-			if (imagePath.size() > 0) {
-				
-			}
-		}		
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					if (files.size() > 0) {
+						try {
+							CloudStorageUploadUtils.uploadFilesToCloud(
+									CloudStorageFolderName, files);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}).start();
+
+		}
 
 		// Get product data in json
 		String productJson = multiPart.getField("product").getEntityAs(
@@ -184,9 +196,8 @@ public class ProductResource {
 			// validate the location value programmatically
 			// since it is a parameter, it can be validated by bean validation
 			Set<ConstraintViolation<Product>> constraints = Validation
-					.buildDefaultValidatorFactory()
-					.getValidator().
-					validate(product, Product.class);
+					.buildDefaultValidatorFactory().getValidator()
+					.validate(product, Default.class);
 			if (constraints.size() > 0) {
 				throw new ConstraintViolationException(constraints);
 			}
